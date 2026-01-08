@@ -1,3 +1,4 @@
+import { Feather, Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
@@ -9,50 +10,106 @@ export default function RegisterScreen() {
   const [full_name, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [phone_number, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const onSubmit = async () => {
-    if (!full_name || !email || !password || !phone_number) {
-      Alert.alert('Vui lòng nhập đầy đủ thông tin')
+    if (!full_name || !email || !password) {
+      Alert.alert('Please fill in all fields')
       return
     }
     try {
       setLoading(true)
-      await auth.register({ full_name, email, password, phone_number })
+      await auth.register({ full_name, email, password, phone_number: '' }) // Assuming phone is optional or handled later
       router.push({ pathname: '/(auth)/verify-email', params: { email } })
     } catch (e: any) {
-      Alert.alert('Đăng ký thất bại', e?.message || JSON.stringify(e))
+      Alert.alert('Registration failed', e?.message || 'Something went wrong')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
-        <Text className="text-2xl font-bold text-green-700 mb-4">Tạo tài khoản</Text>
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} className="px-6">
+        {/* Header */}
+        <View className="items-center mb-10 mt-6">
+          <View className="w-20 h-20 bg-white rounded-2xl items-center justify-center shadow-sm mb-6">
+            <Ionicons name="football" size={40} color="#15803d" />
+            <Text className="text-[10px] font-bold text-green-700 mt-1">FOOTBALL</Text>
+          </View>
+          <Text className="text-3xl font-bold text-gray-900 mb-2">Create Account hêhhe</Text>
+          <Text className="text-gray-500 text-base">Sign up to get started</Text>
+        </View>
 
-        <Text className="text-sm text-gray-600">Họ và tên</Text>
-        <TextInput className="border border-gray-200 rounded p-3 mb-3" value={full_name} onChangeText={setFullName} placeholder="Nguyễn Vũ Đăng Khánh" />
+        {/* Form */}
+        <View className="space-y-4">
+          <View>
+            <Text className="text-gray-900 font-medium mb-2 ml-1">Full Name</Text>
+            <View className="flex-row items-center border border-gray-200 bg-white rounded-xl px-4 h-14">
+              <Feather name="user" size={20} color="#9ca3af" />
+              <TextInput
+                className="flex-1 ml-3 text-gray-900 text-base"
+                placeholder="John Doe"
+                placeholderTextColor="#9ca3af"
+                value={full_name}
+                onChangeText={setFullName}
+              />
+            </View>
+          </View>
 
-        <Text className="text-sm text-gray-600">Email</Text>
-        <TextInput keyboardType="email-address" className="border border-gray-200 rounded p-3 mb-3" value={email} onChangeText={setEmail} placeholder="you@example.com" />
+          <View>
+            <Text className="text-gray-900 font-medium mb-2 ml-1">Email</Text>
+            <View className="flex-row items-center border border-gray-200 bg-white rounded-xl px-4 h-14">
+              <Feather name="mail" size={20} color="#9ca3af" />
+              <TextInput
+                className="flex-1 ml-3 text-gray-900 text-base"
+                placeholder="your@email.com"
+                placeholderTextColor="#9ca3af"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+            </View>
+          </View>
 
-        <Text className="text-sm text-gray-600">Số điện thoại</Text>
-        <TextInput keyboardType="phone-pad" className="border border-gray-200 rounded p-3 mb-3" value={phone_number} onChangeText={setPhoneNumber} placeholder="0917xxxxxx" />
+          <View>
+            <Text className="text-gray-900 font-medium mb-2 ml-1">Password</Text>
+            <View className="flex-row items-center border border-gray-200 bg-white rounded-xl px-4 h-14">
+              <Feather name="lock" size={20} color="#9ca3af" />
+              <TextInput
+                className="flex-1 ml-3 text-gray-900 text-base"
+                placeholder="Create a password"
+                placeholderTextColor="#9ca3af"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} color="#6b7280" />
+              </TouchableOpacity>
+            </View>
+          </View>
 
-        <Text className="text-sm text-gray-600">Mật khẩu</Text>
-        <TextInput secureTextEntry className="border border-gray-200 rounded p-3 mb-6" value={password} onChangeText={setPassword} placeholder="••••••••" />
+          <TouchableOpacity
+            className="bg-green-700 h-14 rounded-full items-center justify-center mt-6 shadow-sm shadow-green-200"
+            onPress={onSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-white text-lg font-bold">Sign Up</Text>
+            )}
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity className="bg-green-600 rounded py-3 items-center" onPress={onSubmit} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white font-medium">Đăng ký</Text>}
-        </TouchableOpacity>
-
-        <View className="flex-row justify-center mt-4">
-          <Text>Bạn đã có tài khoản? </Text>
+        {/* Footer */}
+        <View className="flex-row justify-center mt-8 mb-6">
+          <Text className="text-gray-500 text-base">Already have an account? </Text>
           <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-            <Text className="text-green-600">Đăng nhập</Text>
+            <Text className="text-green-700 font-bold text-base">Sign In</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
