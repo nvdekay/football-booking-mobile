@@ -38,7 +38,7 @@ export default function RegisterScreen() {
             <Ionicons name="football" size={40} color="#15803d" />
             <Text className="text-[10px] font-bold text-green-700 mt-1">FOOTBALL</Text>
           </View>
-          <Text className="text-3xl font-bold text-gray-900 mb-2">Create Account hêhhe</Text>
+          <Text className="text-3xl font-bold text-gray-900 mb-2">Create Account</Text>
           <Text className="text-gray-500 text-base">Sign up to get started</Text>
         </View>
 
