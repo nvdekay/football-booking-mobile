@@ -10,17 +10,18 @@ export default function RegisterScreen() {
   const [full_name, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [phone_number, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
   const onSubmit = async () => {
-    if (!full_name || !email || !password) {
+    if (!full_name || !email || !password || !phone_number) {
       Alert.alert('Please fill in all fields')
       return
     }
     try {
       setLoading(true)
-      await auth.register({ full_name, email, password, phone_number: '' }) // Assuming phone is optional or handled later
+      await auth.register({ full_name, email, password, phone_number })
       router.push({ pathname: '/(auth)/verify-email', params: { email } })
     } catch (e: any) {
       Alert.alert('Registration failed', e?.message || 'Something went wrong')
@@ -70,6 +71,21 @@ export default function RegisterScreen() {
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
+              />
+            </View>
+          </View>
+
+          <View>
+            <Text className="text-gray-900 font-medium mb-2 ml-1">Phone Number</Text>
+            <View className="flex-row items-center border border-gray-200 bg-white rounded-xl px-4 h-14">
+              <Feather name="phone" size={20} color="#9ca3af" />
+              <TextInput
+                className="flex-1 ml-3 text-gray-900 text-base"
+                placeholder="0912345678"
+                placeholderTextColor="#9ca3af"
+                value={phone_number}
+                onChangeText={setPhoneNumber}
+                keyboardType="phone-pad"
               />
             </View>
           </View>
