@@ -1,15 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import * as AuthApi from '../api/auth'
-
-type User = {
-  id: number
-  full_name: string
-  email?: string | null
-  phone_number?: string | null
-  role?: string
-  avatar_url?: string | null
-}
+import { LoginBody, RegisterBody, User } from '../types/auth'
 
 type AuthState = {
   token: string | null
@@ -18,10 +10,11 @@ type AuthState = {
 }
 
 type AuthContextValue = AuthState & {
-  login: (body: { email?: string; phone_number?: string; password: string }) => Promise<void>
+  login: (body: LoginBody) => Promise<void>
   logout: () => Promise<void>
-  register: (body: { full_name: string; email: string; password: string; phone_number: string }) => Promise<void>
+  register: (body: RegisterBody) => Promise<void>
   verifyEmail: (email: string, code: string) => Promise<void>
+  resendVerification: (email: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -35,52 +28,81 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    ;(async () => {
+    const loadAuth = async () => {
       try {
-        const t = await AsyncStorage.getItem(TOKEN_KEY)
-        const u = await AsyncStorage.getItem(USER_KEY)
-        if (t) setToken(t)
-        if (u) setUser(JSON.parse(u))
+        const storedToken = await AsyncStorage.getItem(TOKEN_KEY)
+        const storedUser = await AsyncStorage.getItem(USER_KEY)
+
+        if (storedToken) setToken(storedToken)
+        if (storedUser) setUser(JSON.parse(storedUser))
       } catch (e) {
-        // ignore
+        console.error('Failed to load auth storage', e)
       } finally {
         setLoading(false)
       }
-    })()
+    }
+    loadAuth()
   }, [])
 
-  const saveAuth = async (t: string, u: User) => {
+  const saveAuthProperties = async (t: string, u: User) => {
     setToken(t)
     setUser(u)
-    await AsyncStorage.setItem(TOKEN_KEY, t)
-    await AsyncStorage.setItem(USER_KEY, JSON.stringify(u))
+    try {
+      await AsyncStorage.setItem(TOKEN_KEY, t)
+      await AsyncStorage.setItem(USER_KEY, JSON.stringify(u))
+    } catch (e) {
+      console.error('Failed to save auth storage', e)
+    }
   }
 
-  const clearAuth = async () => {
+  const clearAuthProperties = async () => {
     setToken(null)
     setUser(null)
-    await AsyncStorage.removeItem(TOKEN_KEY)
-    await AsyncStorage.removeItem(USER_KEY)
+    try {
+      await AsyncStorage.removeItem(TOKEN_KEY)
+      await AsyncStorage.removeItem(USER_KEY)
+    } catch (e) {
+      console.error('Failed to clear auth storage', e)
+    }
   }
 
-  const handleLogin = async (body: { email?: string; phone_number?: string; password: string }) => {
-    const res = await AuthApi.login(body)
-    const t = res.token
-    const u = res.user
-    await saveAuth(t, u)
+  const login = async (body: LoginBody) => {
+    const response = await AuthApi.login(body)
+    if (response.success && response.data) {
+      await saveAuthProperties(response.data.token, response.data.user)
+    } else {
+      throw new Error(response.message || 'Login failed')
+    }
   }
 
-  const handleRegister = async (body: { full_name: string; email: string; password: string; phone_number: string }) => {
+  const logout = async () => {
+    await clearAuthProperties()
+  }
+
+  const register = async (body: RegisterBody) => {
     await AuthApi.register(body)
   }
 
-  const handleVerifyEmail = async (email: string, code: string) => {
+  const verifyEmail = async (email: string, code: string) => {
     await AuthApi.verifyEmail(email, code)
+  }
+
+  const resendVerification = async (email: string) => {
+    await AuthApi.resendVerification(email)
   }
 
   return (
     <AuthContext.Provider
-      value={{ token, user, loading, login: handleLogin, logout: clearAuth, register: handleRegister, verifyEmail: handleVerifyEmail }}
+      value={{
+        token,
+        user,
+        loading,
+        login,
+        logout,
+        register,
+        verifyEmail,
+        resendVerification,
+      }}
     >
       {children}
     </AuthContext.Provider>

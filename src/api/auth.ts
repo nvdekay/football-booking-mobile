@@ -1,58 +1,48 @@
-const BASE_URL = 'http://localhost:3000/api'
+import { AuthResponse, LoginBody, LoginResponseData, RegisterBody } from '../types/auth'
 
-type RegisterBody = {
-  full_name: string
-  email: string
-  password: string
-  phone_number: string
+const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1'
+
+async function request<T>(endpoint: string, options: RequestInit = {}): Promise<AuthResponse<T>> {
+  const url = `${BASE_URL}${endpoint}`
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  }
+
+  const response = await fetch(url, { ...options, headers })
+  const data = await response.json()
+
+  if (!response.ok || (data && data.success === false)) {
+    throw new Error(data?.message || 'Something went wrong')
+  }
+
+  return data
 }
 
 export async function register(body: RegisterBody) {
-  const res = await fetch(`${BASE_URL}/auth/register`, {
+  return request<null>('/auth/register', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
-  const data = await res.json()
-  if (!res.ok) throw data
-  return data
 }
 
 export async function verifyEmail(email: string, code: string) {
-  const res = await fetch(`${BASE_URL}/auth/email-verification/verify`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, code }),
+  const params = new URLSearchParams({ email, code })
+  return request<null>(`/auth/email-verification/verify?${params.toString()}`, {
+    method: 'GET',
   })
-  const data = await res.json()
-  if (!res.ok) throw data
-  return data
 }
 
 export async function resendVerification(email: string) {
-  const res = await fetch(`${BASE_URL}/auth/email-verification/resend`, {
+  return request<null>('/auth/email-verification/resend', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
   })
-  const data = await res.json()
-  if (!res.ok) throw data
-  return data
-}
-
-type LoginBody = {
-  email?: string
-  phone_number?: string
-  password: string
 }
 
 export async function login(body: LoginBody) {
-  const res = await fetch(`${BASE_URL}/auth/login`, {
+  return request<LoginResponseData>('/auth/login', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
-  const data = await res.json()
-  if (!res.ok) throw data
-  return data
 }

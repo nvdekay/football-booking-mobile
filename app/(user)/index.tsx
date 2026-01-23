@@ -27,7 +27,7 @@ export default function UserHome() {
       </View>
 
       <TouchableOpacity className="bg-red-500 rounded py-3 items-center" onPress={handleLogout}>
-        <Text className="text-white">Đăng xuất</Text>
+        <Text className="text-white">Đăng xuất đi con vợ ơi</Text>
       </TouchableOpacity>
     </SafeAreaView>
   )
