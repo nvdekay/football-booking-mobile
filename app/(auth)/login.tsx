@@ -1,4 +1,4 @@
-import { Feather, Ionicons } from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import { ActivityIndicator, Alert, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native'
@@ -14,43 +14,43 @@ export default function LoginScreen() {
 
   const onLogin = async () => {
     if (!email && !password) {
-      Alert.alert('Please enter email and password')
+      Alert.alert('Lỗi', 'Vui lòng nhập email và mật khẩu')
       return
     }
     try {
       setLoading(true)
-      // Determining if input is email or phone is logic handled by backend or detailed regex, passing as email for now based on UI
       await auth.login({ email, password })
       router.replace('/(user)')
     } catch (e: any) {
-      Alert.alert('Login failed', e?.message || 'Something went wrong')
+      Alert.alert('Đăng nhập thất bại', e?.message || 'Có lỗi xảy ra')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 justify-center px-6">
-        {/* Header */}
+        {/* Logo Section */}
         <View className="items-center mb-10">
-          <View className="w-20 h-20 bg-white rounded-2xl items-center justify-center shadow-sm mb-6">
-            <Ionicons name="football" size={40} color="#15803d" />
-            <Text className="text-[10px] font-bold text-green-700 mt-1">FOOTBAL</Text>
+          <View className="w-24 h-24 bg-[#10b981] rounded-3xl items-center justify-center shadow-md mb-5">
+            <Ionicons name="football" size={48} color="white" />
           </View>
-          <Text className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</Text>
-          <Text className="text-gray-500 text-base">Sign in to continue</Text>
+          <Text className="text-3xl font-bold text-gray-900 mb-2">Đặt Sân Bóng</Text>
+          <Text className="text-gray-500 text-base">Đăng nhập để tiếp tục</Text>
         </View>
 
-        {/* Form */}
+        {/* Form Section */}
         <View className="space-y-4">
           <View>
-            <Text className="text-gray-900 font-medium mb-2 ml-1">Email</Text>
-            <View className="flex-row items-center border border-gray-200 bg-white rounded-xl px-4 h-14">
-              <Feather name="mail" size={20} color="#9ca3af" />
+            <Text className="text-gray-900 font-semibold mb-2 text-base">Email</Text>
+            <View className="flex-row items-center border border-gray-200 rounded-xl px-4 h-14 bg-white">
+              <View className="mr-3">
+                <Ionicons name="mail-outline" size={22} color="#9ca3af" />
+              </View>
               <TextInput
-                className="flex-1 ml-3 text-gray-900 text-base"
-                placeholder="your@email.com"
+                className="flex-1 text-gray-900 text-base"
+                placeholder="example@email.com"
                 placeholderTextColor="#9ca3af"
                 value={email}
                 onChangeText={setEmail}
@@ -61,41 +61,51 @@ export default function LoginScreen() {
           </View>
 
           <View>
-            <Text className="text-gray-900 font-medium mb-2 ml-1">Password</Text>
-            <View className="flex-row items-center border border-gray-200 bg-white rounded-xl px-4 h-14">
-              <Feather name="lock" size={20} color="#9ca3af" />
+            <Text className="text-gray-900 font-semibold mb-2 text-base">Mật khẩu</Text>
+            <View className="flex-row items-center border border-gray-200 rounded-xl px-4 h-14 bg-white">
+              <View className="mr-3">
+                <Ionicons name="lock-closed-outline" size={22} color="#9ca3af" />
+              </View>
               <TextInput
-                className="flex-1 ml-3 text-gray-900 text-base"
-                placeholder="Enter your password"
+                className="flex-1 text-gray-900 text-base"
+                placeholder="........"
                 placeholderTextColor="#9ca3af"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
               />
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} color="#6b7280" />
+                <Ionicons name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={22} color="#6b7280" />
               </TouchableOpacity>
             </View>
           </View>
 
+          {/* Options: Remember & Forgot Password */}
+          <View className="flex-row justify-between items-center mt-2">
+            <TouchableOpacity>
+              <Text className="text-[#10b981] font-medium text-base">Quên mật khẩu?</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Login Button */}
           <TouchableOpacity
-            className="bg-green-700 h-14 rounded-full items-center justify-center mt-6 shadow-sm shadow-green-200"
+            className="bg-[#10b981] h-14 rounded-xl items-center justify-center mt-6 shadow-sm"
             onPress={onLogin}
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color="white" />
             ) : (
-              <Text className="text-white text-lg font-bold">Sign In</Text>
+              <Text className="text-white text-lg font-bold">Đăng nhập</Text>
             )}
           </TouchableOpacity>
         </View>
 
         {/* Footer */}
         <View className="flex-row justify-center mt-8">
-          <Text className="text-gray-500 text-base">Don't have an account? </Text>
+          <Text className="text-gray-500 text-base">Chưa có tài khoản? </Text>
           <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-            <Text className="text-green-700 font-bold text-base">Sign Up</Text>
+            <Text className="text-[#10b981] font-bold text-base">Đăng ký</Text>
           </TouchableOpacity>
         </View>
       </View>
