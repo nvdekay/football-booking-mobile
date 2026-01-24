@@ -1,34 +1,84 @@
-import { useRouter } from 'expo-router'
-import React from 'react'
-import { Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
-import { useAuth } from '../../src/context/AuthContext'
+import React, { useMemo, useState } from 'react';
+import { SafeAreaView, ScrollView, View } from 'react-native';
+import { MOCK_STADIUMS, TAB_FILTERS } from '../../src/constants/mockStadiums';
+import { FeaturedStadium } from './_components/FeaturedStadium';
+import { Header } from './_components/Header';
+import { SearchBar } from './_components/SearchBar';
+import { StadiumCard } from './_components/StadiumCard';
+import { TabFilter } from './_components/TabFilter';
 
 export default function UserHome() {
-  const { user, logout } = useAuth()
-  const router = useRouter()
+  const [selectedTab, setSelectedTab] = useState<string>('all');
+  const [searchText, setSearchText] = useState<string>('');
 
-  const handleLogout = async () => {
-    await logout()
-    router.replace('/(auth)/login')
-  }
+  // Filter stadiums based on selected tab and search text
+  const filteredStadiums = useMemo(() => {
+    let filtered = MOCK_STADIUMS;
+
+    // Filter by tab
+    if (selectedTab !== 'all' && selectedTab !== 'g') {
+      filtered = filtered.filter((stadium) => stadium.type === selectedTab);
+    }
+
+    // Filter by search text
+    if (searchText.trim()) {
+      const searchLower = searchText.toLowerCase();
+      filtered = filtered.filter(
+        (stadium) =>
+          stadium.name.toLowerCase().includes(searchLower) ||
+          stadium.address.toLowerCase().includes(searchLower)
+      );
+    }
+
+    return filtered;
+  }, [selectedTab, searchText]);
+
+  const handleTabSelect = (value: string) => {
+    setSelectedTab(value);
+  };
+
+  const handleSearch = (text: string) => {
+    setSearchText(text);
+  };
 
   return (
-    <SafeAreaView className="flex-1 bg-white p-6">
-      <View className="items-center mb-6">
-        {user?.avatar_url ? (
-          <Image source={{ uri: user.avatar_url }} className="w-24 h-24 rounded-full mb-4" />
-        ) : (
-          <View className="w-24 h-24 rounded-full bg-green-100 items-center justify-center mb-4">
-            <Text className="text-green-700 text-xl">{user?.full_name ? user.full_name.charAt(0) : 'U'}</Text>
-          </View>
-        )}
-        <Text className="text-xl font-semibold">{user?.full_name}</Text>
-        <Text className="text-sm text-gray-600">{user?.email || user?.phone_number}</Text>
-      </View>
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16 }}
+      >
+        {/* Header with greeting */}
+        <Header />
 
-      <TouchableOpacity className="bg-red-500 rounded py-3 items-center" onPress={handleLogout}>
-        <Text className="text-white">Đăng xuất đi con vợ ơi</Text>
-      </TouchableOpacity>
+        {/* Search Bar */}
+        <View className="mb-4">
+          <SearchBar onChangeText={handleSearch} />
+        </View>
+
+        {/* Tab Filter */}
+        <View className="mb-4">
+          <TabFilter tabs={TAB_FILTERS} onSelectTab={handleTabSelect} />
+        </View>
+
+        {/* Featured Stadiums */}
+        <FeaturedStadium stadiums={MOCK_STADIUMS} />
+
+        {/* Danh sách sân heading */}
+        <View className="mb-4">
+          {/* This will be displayed by the text in the list of stadiums */}
+        </View>
+
+        {/* Stadium List */}
+        <View>
+          {filteredStadiums.map((stadium) => (
+            <StadiumCard key={stadium.id} stadium={stadium} onBookPress={() => {}} />
+          ))}
+        </View>
+
+        {/* Bottom spacing */}
+        <View className="h-8" />
+      </ScrollView>
     </SafeAreaView>
-  )
+  );
 }

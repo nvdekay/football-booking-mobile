@@ -20,7 +20,9 @@ export default function LoginScreen() {
     try {
       setLoading(true)
       await auth.login({ email, password })
-      router.replace('/(user)')
+      
+      // Navigation will be handled automatically by useProtectedRoute based on user role
+      // No need to explicitly router.replace here
     } catch (e: any) {
       Alert.alert('Đăng nhập thất bại', e?.message || 'Có lỗi xảy ra')
     } finally {
