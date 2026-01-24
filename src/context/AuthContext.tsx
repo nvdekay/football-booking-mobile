@@ -15,6 +15,7 @@ type AuthContextValue = AuthState & {
   register: (body: RegisterBody) => Promise<void>
   verifyEmail: (email: string, code: string) => Promise<void>
   resendVerification: (email: string) => Promise<void>
+  refreshUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -91,6 +92,18 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
     await AuthApi.resendVerification(email)
   }
 
+  const refreshUser = async () => {
+    if (!token) throw new Error('No token available')
+    
+    const response = await AuthApi.getMe(token)
+    if (response.success && response.data) {
+      setUser(response.data)
+      await AsyncStorage.setItem(USER_KEY, JSON.stringify(response.data))
+    } else {
+      throw new Error(response.message || 'Failed to refresh user data')
+    }
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -102,6 +115,7 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
         register,
         verifyEmail,
         resendVerification,
+        refreshUser,
       }}
     >
       {children}

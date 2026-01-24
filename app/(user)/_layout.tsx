@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import UserHome from './index';
+import ProfileScreen from './profile/index';
 
 const Tab = createBottomTabNavigator();
 
@@ -71,19 +72,13 @@ export default function UserLayout() {
       />
       <Tab.Screen
         name="profile"
-        component={UserHome}
+        component={ProfileScreen}
         options={{
           title: 'Cá nhân',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
         }}
-        listeners={() => ({
-          tabPress: (e) => {
-            e.preventDefault();
-            // TODO: Implement profile screen
-          },
-        })}
       />
     </Tab.Navigator>
   );
