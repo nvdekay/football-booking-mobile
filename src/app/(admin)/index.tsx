@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
-import { useAuth } from '../../src/context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
 
 export default function AdminScreen() {
   const { user, logout } = useAuth()

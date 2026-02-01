@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import { User } from '../../../../src/types/auth';
+import { User } from '../../../../types/auth';
 
 interface ProfileHeaderProps {
   user: User | null;
@@ -19,7 +19,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
           <Ionicons name="notifications-outline" size={24} color="#666666" />
         </TouchableOpacity>
       </View>
-      
+
       {/* Profile Info */}
       <View className="items-center">
         {/* Avatar */}
@@ -36,28 +36,26 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
               </Text>
             </View>
           )}
-          
+
           {/* Edit avatar button */}
           <TouchableOpacity className="absolute bottom-0 right-0 bg-green-600 w-8 h-8 rounded-full items-center justify-center">
             <Ionicons name="camera" size={16} color="white" />
           </TouchableOpacity>
         </View>
-        
+
         {/* Name and Role */}
         <Text className="text-2xl font-bold text-gray-900 mb-2">
           {user.full_name}
         </Text>
-        
+
         <View className="flex-row items-center">
-          <View 
-            className={`px-3 py-1 rounded-full ${
-              user.role === 'ADMIN' ? 'bg-red-100' : 'bg-green-100'
-            }`}
-          >
-            <Text 
-              className={`text-xs font-semibold ${
-                user.role === 'ADMIN' ? 'text-red-700' : 'text-green-700'
+          <View
+            className={`px-3 py-1 rounded-full ${user.role === 'ADMIN' ? 'bg-red-100' : 'bg-green-100'
               }`}
+          >
+            <Text
+              className={`text-xs font-semibold ${user.role === 'ADMIN' ? 'text-red-700' : 'text-green-700'
+                }`}
             >
               {user.role}
             </Text>

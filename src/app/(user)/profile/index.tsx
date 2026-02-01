@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
-import { useAuth } from '../../../src/context/AuthContext';
-import { User } from '../../../src/types/auth';
+import { useAuth } from '../../../context/AuthContext';
+import { User } from '../../../types/auth';
 import { ProfileActions, ProfileHeader, ProfileInfo } from './_components';
 
 export default function ProfileScreen() {
@@ -57,7 +57,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <ScrollView 
+      <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -70,19 +70,19 @@ export default function ProfileScreen() {
       >
         {/* Header */}
         <ProfileHeader user={user} />
-        
+
         {/* User Information */}
         <ProfileInfo user={user} />
-        
+
         {/* Actions */}
-        <ProfileActions 
+        <ProfileActions
           onEditProfile={() => Alert.alert('Thông báo', 'Chức năng chỉnh sửa hồ sơ sẽ được cập nhật sau')}
           onChangePassword={() => Alert.alert('Thông báo', 'Chức năng đổi mật khẩu sẽ được cập nhật sau')}
           onSettings={() => Alert.alert('Thông báo', 'Chức năng cài đặt sẽ được cập nhật sau')}
           onSupport={() => Alert.alert('Thông báo', 'Chức năng hỗ trợ sẽ được cập nhật sau')}
           onLogout={handleLogout}
         />
-        
+
         {/* Bottom spacing */}
         <View className="h-8" />
       </ScrollView>

@@ -6,10 +6,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        primary: "#089166",
+        "background-light": "#f5f8f7",
+        "background-dark": "#10221c",
         green: {
           600: '#16a34a',
           700: '#15803d',
         },
+      },
+      fontFamily: {
+        display: ["Lexend", "sans-serif"],
       },
     },
   },

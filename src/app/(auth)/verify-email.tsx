@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import { ActivityIndicator, Alert, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { useAuth } from '../../src/context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
 
 export default function VerifyEmailScreen() {
   const params = useLocalSearchParams()

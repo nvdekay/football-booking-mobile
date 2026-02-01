@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import { ActivityIndicator, Alert, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { useAuth } from '../../src/context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
 
 export default function LoginScreen() {
   const router = useRouter()
@@ -20,7 +20,7 @@ export default function LoginScreen() {
     try {
       setLoading(true)
       await auth.login({ email, password })
-      
+
       // Navigation will be handled automatically by useProtectedRoute based on user role
       // No need to explicitly router.replace here
     } catch (e: any) {

@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { useAuth } from '../../src/context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
 
 export default function RegisterScreen() {
   const router = useRouter()

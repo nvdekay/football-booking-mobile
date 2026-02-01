@@ -22,14 +22,14 @@ export default function useProtectedRoute() {
       if (user.role === 'ADMIN') {
         router.replace('/(admin)');
       } else {
-        router.replace('/(user)');
+        router.replace('/(user)/home');
       }
     } else if (user && inUserGroup && user.role === 'ADMIN') {
       // Admin trying to access user area, redirect to admin
       router.replace('/(admin)');
     } else if (user && inAdminGroup && user.role === 'USER') {
       // User trying to access admin area, redirect to user
-      router.replace('/(user)');
+      router.replace('/(user)/home');
     }
   }, [user, segments, loading]);
 }

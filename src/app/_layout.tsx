@@ -1,8 +1,8 @@
 import { Slot } from 'expo-router';
 import React from 'react';
-import { AuthProvider } from '../src/context/AuthContext';
-import useProtectedRoute from '../src/hooks/useProtectedRoute';
-import '../src/styles/global.css';
+import { AuthProvider } from '../context/AuthContext';
+import useProtectedRoute from '../hooks/useProtectedRoute';
+import '../styles/global.css';
 
 function LayoutContent() {
   useProtectedRoute();
