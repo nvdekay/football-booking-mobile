@@ -1,8 +1,10 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 export const HomeBottomNav = () => {
+    const router = useRouter();
     return (
         <View className="absolute bottom-0 w-full bg-white dark:bg-[#0d1c17] border-t border-gray-100 dark:border-gray-800 pb-5 pt-3 px-6 flex-row justify-between items-center z-30 shadow-sm">
             <TouchableOpacity className="items-center gap-1 group">
@@ -26,7 +28,10 @@ export const HomeBottomNav = () => {
                 <Text className="text-[10px] font-medium text-slate-400 dark:text-slate-500">Wallet</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="items-center gap-1">
+            <TouchableOpacity
+                className="items-center gap-1"
+                onPress={() => router.push('/(user)/profile')}
+            >
                 <MaterialIcons name="person" size={26} color="#94a3b8" />
                 <Text className="text-[10px] font-medium text-slate-400 dark:text-slate-500">Profile</Text>
             </TouchableOpacity>

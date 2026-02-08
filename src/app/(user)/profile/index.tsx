@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { useAuth } from '../../../context/AuthContext';
 import { User } from '../../../types/auth';
-import { ProfileActions, ProfileHeader, ProfileInfo } from './_components';
+import { LogoutButton, MenuList, ProfileHeader, ProfileInfo, WalletCard } from './_components';
 
 export default function ProfileScreen() {
   const { user: authUser, refreshUser, logout } = useAuth();
@@ -24,12 +24,12 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     Alert.alert(
-      'Đăng xuất',
-      'Bạn có chắc chắn muốn đăng xuất?',
+      'Log Out',
+      'Are you sure you want to log out?',
       [
-        { text: 'Hủy', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Đăng xuất',
+          text: 'Log Out',
           style: 'destructive',
           onPress: async () => {
             await logout();
@@ -37,6 +37,10 @@ export default function ProfileScreen() {
         },
       ]
     );
+  };
+
+  const handleSettings = () => {
+    Alert.alert('Settings', 'This feature will be updated soon');
   };
 
   useEffect(() => {
@@ -47,44 +51,44 @@ export default function ProfileScreen() {
 
   if (loading && !user) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
+      <SafeAreaView className="flex-1 bg-[#f5f8f7]">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#16a34a" />
+          <ActivityIndicator size="large" color="#0df2aa" />
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-[#f5f8f7]">
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            colors={['#16a34a']}
-            tintColor={'#16a34a'}
+            colors={['#0df2aa']}
+            tintColor={'#0df2aa'}
           />
         }
+        className="bg-[#f5f8f7]"
+        contentContainerStyle={{ paddingBottom: 20 }}
+        stickyHeaderIndices={[0]}
       >
         {/* Header */}
-        <ProfileHeader user={user} />
+        <ProfileHeader />
 
         {/* User Information */}
         <ProfileInfo user={user} />
 
-        {/* Actions */}
-        <ProfileActions
-          onEditProfile={() => Alert.alert('Thông báo', 'Chức năng chỉnh sửa hồ sơ sẽ được cập nhật sau')}
-          onChangePassword={() => Alert.alert('Thông báo', 'Chức năng đổi mật khẩu sẽ được cập nhật sau')}
-          onSettings={() => Alert.alert('Thông báo', 'Chức năng cài đặt sẽ được cập nhật sau')}
-          onSupport={() => Alert.alert('Thông báo', 'Chức năng hỗ trợ sẽ được cập nhật sau')}
-          onLogout={handleLogout}
-        />
+        {/* Wallet Card */}
+        <WalletCard />
 
-        {/* Bottom spacing */}
-        <View className="h-8" />
+        {/* Menu List */}
+        <MenuList onSettings={handleSettings} />
+
+        {/* Logout Button */}
+        <LogoutButton onLogout={handleLogout} />
       </ScrollView>
     </SafeAreaView>
   );

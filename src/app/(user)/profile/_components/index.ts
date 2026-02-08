@@ -1,3 +1,6 @@
-export { ProfileActions } from './ProfileActions';
-export { ProfileHeader } from './ProfileHeader';
-export { ProfileInfo } from './ProfileInfo';
+export * from './LogoutButton';
+export * from './MenuList';
+export * from './ProfileHeader';
+export * from './ProfileInfo';
+export * from './WalletCard';
+

@@ -31,11 +31,12 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
   useEffect(() => {
     const loadAuth = async () => {
       try {
-        const storedToken = await AsyncStorage.getItem(TOKEN_KEY)
-        const storedUser = await AsyncStorage.getItem(USER_KEY)
+        // Commented out to force login on app start as requested
+        // const storedToken = await AsyncStorage.getItem(TOKEN_KEY)
+        // const storedUser = await AsyncStorage.getItem(USER_KEY)
 
-        if (storedToken) setToken(storedToken)
-        if (storedUser) setUser(JSON.parse(storedUser))
+        // if (storedToken) setToken(storedToken)
+        // if (storedUser) setUser(JSON.parse(storedUser))
       } catch (e) {
         console.error('Failed to load auth storage', e)
       } finally {
@@ -94,7 +95,7 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
 
   const refreshUser = async () => {
     if (!token) throw new Error('No token available')
-    
+
     const response = await AuthApi.getMe(token)
     if (response.success && response.data) {
       setUser(response.data)
