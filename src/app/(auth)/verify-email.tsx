@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons'
+import { MaterialIcons } from '@expo/vector-icons'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { ActivityIndicator, Alert, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useAuth } from '../../context/AuthContext'
 
@@ -10,18 +10,43 @@ export default function VerifyEmailScreen() {
   const auth = useAuth()
 
   const email = (params.email as string) || ''
-  const [code, setCode] = useState('')
+
+  // State for 6 OTP digits
+  const [otp, setOtp] = useState(['', '', '', '', '', ''])
+  const inputRefs = useRef<Array<TextInput | null>>([])
+
   const [loading, setLoading] = useState(false)
   const [resendLoading, setResendLoading] = useState(false)
 
+  // Function to handle input change
+  const handleOtpChange = (value: string, index: number) => {
+    const newOtp = [...otp]
+    newOtp[index] = value
+    setOtp(newOtp)
+
+    // Auto focus next input if value is entered
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus()
+    }
+  }
+
+  // Handle backspace
+  const handleBackspace = (key: string, index: number) => {
+    if (key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus()
+    }
+  }
+
   const onVerify = async () => {
-    if (!email || !code) {
-      Alert.alert('Lỗi', 'Vui lòng nhập mã xác thực và kiểm tra email')
+    const code = otp.join('')
+    if (code.length !== 6) {
+      Alert.alert('Lỗi', 'Vui lòng nhập đủ 6 số xác thực')
       return
     }
     try {
       setLoading(true)
       await auth.verifyEmail(email, code)
+      // Success alert or navigation
       Alert.alert('Thành công', 'Tài khoản đã được kích hoạt', [
         { text: 'Đăng nhập ngay', onPress: () => router.replace('/(auth)/login') }
       ])
@@ -46,71 +71,103 @@ export default function VerifyEmailScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 px-6 pt-10">
-        {/* Back Button */}
-        <TouchableOpacity onPress={() => router.back()} className="mb-8 w-10 h-10 items-center justify-center rounded-full bg-gray-50">
-          <Ionicons name="arrow-back" size={24} color="#374151" />
-        </TouchableOpacity>
+    <View className="flex-1 bg-[#f5f8f7] dark:bg-[#10221c]">
+      <SafeAreaView className="flex-1">
+        <View className="relative flex h-full w-full flex-col overflow-hidden">
 
-        {/* Header */}
-        <View className="items-center mb-8">
-          <View className="w-20 h-20 bg-[#10b981] rounded-full items-center justify-center shadow-lg shadow-green-200 mb-6">
-            <Ionicons name="shield-checkmark" size={40} color="white" />
+          {/* TopAppBar */}
+          <View className="flex-row items-center p-4 pb-2 justify-between bg-white dark:bg-[#10221c]">
+            <TouchableOpacity
+              className="flex size-12 shrink-0 items-center justify-center"
+              onPress={() => router.back()}
+            >
+              <MaterialIcons name="arrow-back-ios" size={24} color="#111816" />
+            </TouchableOpacity>
+            <Text className="text-[#111816] dark:text-white text-lg font-bold leading-tight flex-1 text-center pr-12">
+              Xác thực OTP
+            </Text>
           </View>
-          <Text className="text-2xl font-bold text-gray-900 mb-2 text-center">Xác thực Email</Text>
-          <Text className="text-gray-500 text-center px-4">
-            Mã OTP đã được gửi đến email{' '}
-            <Text className="text-gray-900 font-semibold">{email}</Text>
-          </Text>
-        </View>
 
-        {/* Form */}
-        <View className="space-y-6">
-          <View>
-            <Text className="text-gray-900 font-semibold mb-2 ml-1">Mã OTP</Text>
-            <View className="flex-row items-center border-2 border-green-100 bg-green-50/30 rounded-2xl px-4 h-16">
-              <Ionicons name="keypad-outline" size={24} color="#10b981" />
-              <TextInput
-                className="flex-1 ml-3 text-gray-900 text-xl font-medium tracking-widest"
-                value={code}
-                onChangeText={setCode}
-                placeholder="123456"
-                placeholderTextColor="#9ca3af"
-                keyboardType="number-pad"
-                maxLength={6}
-                autoFocus
-              />
+          <View className="flex flex-col items-center px-6 pt-8 pb-4 flex-1">
+            {/* Large Friendly Icon/Illustration */}
+            <View className="mb-8 flex items-center justify-center w-32 h-32 rounded-full bg-[#0df2aa]/10 dark:bg-[#0df2aa]/20">
+              <View className="w-24 h-24 rounded-full bg-[#0df2aa] flex items-center justify-center shadow-lg shadow-[#0df2aa]/30">
+                <MaterialIcons name="verified-user" size={48} color="white" />
+              </View>
             </View>
-          </View>
 
-          <TouchableOpacity
-            className="bg-[#10b981] h-14 rounded-xl items-center justify-center shadow-md shadow-green-200 mt-4"
-            onPress={onVerify}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-white text-lg font-bold">Xác thực</Text>
-            )}
-          </TouchableOpacity>
+            {/* HeadlineText */}
+            <Text className="text-[#111816] dark:text-white text-2xl font-bold leading-tight text-center pb-2">
+              Xác thực danh tính
+            </Text>
 
-          <TouchableOpacity
-            onPress={onResend}
-            disabled={resendLoading}
-            className="items-center py-4"
-          >
-            {resendLoading ? (
-              <ActivityIndicator color="#10b981" size="small" />
-            ) : (
-              <Text className="text-gray-500 font-medium">
-                Không nhận được mã? <Text className="text-[#10b981] font-bold">Gửi lại</Text>
+            {/* BodyText */}
+            <Text className="text-[#4b5e58] dark:text-gray-400 text-base font-normal leading-normal pb-8 text-center max-w-[300px]">
+              Vui lòng nhập mã OTP đã được gửi đến số điện thoại/email của bạn
+            </Text>
+
+            {/* ConfirmationCode (OTP Inputs) */}
+            <View className="flex-row justify-center w-full py-4 gap-3">
+              {otp.map((digit, index) => (
+                <TextInput
+                  key={index}
+                  ref={(ref) => { inputRefs.current[index] = ref }}
+                  className={`flex h-14 w-12 rounded-lg text-center bg-gray-50 dark:bg-gray-800 border-2 ${digit ? 'border-[#0df2aa]' : 'border-transparent'
+                    } focus:border-[#0df2aa] text-xl font-bold text-gray-900 dark:text-white`}
+                  maxLength={1}
+                  keyboardType="number-pad"
+                  value={digit}
+                  onChangeText={(text) => handleOtpChange(text, index)}
+                  onKeyPress={({ nativeEvent }) => handleBackspace(nativeEvent.key, index)}
+                  autoFocus={index === 0}
+                />
+              ))}
+            </View>
+
+            {/* Resend Link */}
+            <View className="mt-8 items-center">
+              <Text className="text-sm text-[#4b5e58] dark:text-gray-400">
+                Bạn chưa nhận được mã?
               </Text>
-            )}
-          </TouchableOpacity>
+              <TouchableOpacity
+                className="mt-2 flex-row items-center justify-center gap-2"
+                onPress={onResend}
+                disabled={resendLoading}
+              >
+                {resendLoading ? (
+                  <ActivityIndicator size="small" color="#0df2aa" />
+                ) : (
+                  <>
+                    <MaterialIcons name="replay" size={20} color="#0df2aa" />
+                    <Text className="text-[#0df2aa] font-semibold">Gửi lại mã (59s)</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <View className="flex-grow" />
+
+            {/* Primary Action Button */}
+            <View className="w-full pb-6">
+              <TouchableOpacity
+                className="w-full bg-[#0df2aa] items-center justify-center py-4 px-6 rounded-xl shadow-lg shadow-[#0df2aa]/20"
+                onPress={onVerify}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#10221c" />
+                ) : (
+                  <Text className="text-[#10221c] font-bold text-lg">Xác nhận</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            {/* iOS Home Indicator Placeholder */}
+            <View className="h-1 w-32 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-2" />
+
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   )
 }
