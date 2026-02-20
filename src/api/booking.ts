@@ -57,3 +57,24 @@ export async function getMyBookings(token: string): Promise<ApiResponse<Booking[
     headers: { Authorization: `Bearer ${token}` },
   })
 }
+
+export async function getBookingQr(
+  bookingId: number,
+  token: string
+): Promise<ApiResponse<{ check_in_code: string }>> {
+  return request<{ check_in_code: string }>(`/bookings/${bookingId}/qr`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function cancelBooking(
+  bookingId: number,
+  reason: string,
+  token: string
+): Promise<ApiResponse<null>> {
+  return request<null>(`/bookings/${bookingId}/cancel`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ reason }),
+  })
+}
