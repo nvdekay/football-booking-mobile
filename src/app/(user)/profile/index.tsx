@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { useAuth } from '../../../context/AuthContext';
@@ -5,6 +6,7 @@ import { User } from '../../../types/auth';
 import { LogoutButton, MenuList, ProfileHeader, ProfileInfo, WalletCard } from './_components';
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const { user: authUser, refreshUser, logout } = useAuth();
   const [user, setUser] = useState<User | null>(authUser);
   const [loading, setLoading] = useState(false);
@@ -82,10 +84,16 @@ export default function ProfileScreen() {
         <ProfileInfo user={user} />
 
         {/* Wallet Card */}
-        <WalletCard />
+        <WalletCard
+          balance={user?.wallet_balance ?? 0}
+          onTopup={() => router.push('/(user)/profile/wallet' as any)}
+        />
 
         {/* Menu List */}
-        <MenuList onSettings={handleSettings} />
+        <MenuList
+          onSettings={handleSettings}
+          onTransactionHistory={() => router.push({ pathname: '/(user)/profile/wallet' as any, params: { tab: 'history' } })}
+        />
 
         {/* Logout Button */}
         <LogoutButton onLogout={handleLogout} />

@@ -5,6 +5,8 @@ export type User = {
     phone_number: string
     role: string
     avatar_url: string | null
+    wallet_balance: number
+    loyalty_points: number
 }
 
 export type RegisterBody = {

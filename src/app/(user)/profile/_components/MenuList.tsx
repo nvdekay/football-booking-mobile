@@ -31,9 +31,10 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, title, subtitle, onPress }) =
 
 interface MenuListProps {
     onSettings?: () => void;
+    onTransactionHistory?: () => void;
 }
 
-export const MenuList: React.FC<MenuListProps> = ({ onSettings }) => {
+export const MenuList: React.FC<MenuListProps> = ({ onSettings, onTransactionHistory }) => {
     return (
         <View className="flex flex-col px-4 gap-1">
             <Text className="px-2 pb-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
@@ -50,6 +51,7 @@ export const MenuList: React.FC<MenuListProps> = ({ onSettings }) => {
                 icon="receipt-outline"
                 title="Transaction History"
                 subtitle="View your payments and top-ups"
+                onPress={onTransactionHistory}
             />
 
             <MenuItem
