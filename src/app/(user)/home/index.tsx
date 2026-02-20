@@ -8,7 +8,6 @@ import { Field, FieldSearchParams, FieldType } from '../../../types/field';
 import { FeaturedCarousel } from './_components/FeaturedCarousel';
 import { FieldFilterPanel } from './_components/FieldFilterPanel';
 import { FilterChips } from './_components/FilterChips';
-import { HomeBottomNav } from './_components/HomeBottomNav';
 import { HomeHeader } from './_components/HomeHeader';
 import { PopularFields } from './_components/PopularFields';
 import { SearchBar } from './_components/SearchBar';
@@ -78,7 +77,7 @@ export default function HomeScreen() {
 
                 <ScrollView
                     className="flex-1"
-                    contentContainerStyle={{ paddingBottom: 100 }}
+                    contentContainerStyle={{ paddingBottom: 20 }}
                     showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled"
                 >
@@ -113,7 +112,6 @@ export default function HomeScreen() {
                     <PopularFields fields={fields} loading={loading} />
                 </ScrollView>
 
-                <HomeBottomNav />
             </SafeAreaView>
         </View>
     );
