@@ -6,6 +6,7 @@ import { Field } from '../../../../types/field';
 
 type FeaturedCarouselProps = {
     fields: Field[];
+    onFieldPress?: (field: Field) => void;
 };
 
 function formatPrice(price: string): string {
@@ -13,7 +14,7 @@ function formatPrice(price: string): string {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '₫';
 }
 
-export const FeaturedCarousel = ({ fields }: FeaturedCarouselProps) => {
+export const FeaturedCarousel = ({ fields, onFieldPress }: FeaturedCarouselProps) => {
     if (fields.length === 0) return null;
 
     return (
@@ -82,6 +83,7 @@ export const FeaturedCarousel = ({ fields }: FeaturedCarouselProps) => {
                     return (
                         <TouchableOpacity
                             key={field.field_id}
+                            onPress={() => onFieldPress?.(field)}
                             className="w-72 h-44 rounded-2xl overflow-hidden relative shadow-lg"
                         >
                             {field.image_url ? (

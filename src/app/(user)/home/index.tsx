@@ -1,3 +1,5 @@
+import * as Location from 'expo-location';
+import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
@@ -13,8 +15,10 @@ import { PopularFields } from './_components/PopularFields';
 import { SearchBar } from './_components/SearchBar';
 
 export default function HomeScreen() {
+    const router = useRouter();
     const [fields, setFields] = useState<Field[]>([]);
     const [loading, setLoading] = useState(true);
+    const [userLocation, setUserLocation] = useState<{ lat: number; long: number } | null>(null);
 
     const [keyword, setKeyword] = useState('');
     const [selectedType, setSelectedType] = useState<FieldType | null>(null);
@@ -28,9 +32,23 @@ export default function HomeScreen() {
     >({});
 
     useEffect(() => {
+        (async () => {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status === 'granted') {
+                const loc = await Location.getCurrentPositionAsync({});
+                setUserLocation({ lat: loc.coords.latitude, long: loc.coords.longitude });
+            }
+        })();
+    }, []);
+
+    useEffect(() => {
         const params: FieldSearchParams = { ...appliedFilters };
         if (keyword.trim()) params.keyword = keyword.trim();
         if (selectedType) params.type = selectedType;
+        if (userLocation) {
+            params.lat = userLocation.lat;
+            params.long = userLocation.long;
+        }
 
         const timer = setTimeout(async () => {
             try {
@@ -45,7 +63,7 @@ export default function HomeScreen() {
         }, 300);
 
         return () => clearTimeout(timer);
-    }, [keyword, selectedType, appliedFilters]);
+    }, [keyword, selectedType, appliedFilters, userLocation]);
 
     const handleApplyFilters = () => {
         const filters: typeof appliedFilters = {};
@@ -64,6 +82,10 @@ export default function HomeScreen() {
         setRating(null);
         setAppliedFilters({});
         setShowFilterPanel(false);
+    };
+
+    const handleFieldPress = (field: Field) => {
+        router.push(`/(user)/home/${field.field_id}` as any);
     };
 
     const isFilterActive =
@@ -107,9 +129,9 @@ export default function HomeScreen() {
                     />
 
                     <View className="h-4" />
-                    <FeaturedCarousel fields={fields} />
+                    <FeaturedCarousel fields={fields} onFieldPress={handleFieldPress} />
                     <View className="h-4" />
-                    <PopularFields fields={fields} loading={loading} />
+                    <PopularFields fields={fields} loading={loading} onFieldPress={handleFieldPress} />
                 </ScrollView>
 
             </SafeAreaView>

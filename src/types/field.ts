@@ -15,6 +15,7 @@ export type Field = {
   latitude: number | null
   longitude: number | null
   thumbnail: string | null
+  distance?: number
 }
 
 export type FieldSearchParams = {
@@ -23,4 +24,23 @@ export type FieldSearchParams = {
   min_price?: number
   max_price?: number
   rating?: number
+  lat?: number
+  long?: number
+  sort_by?: string
+}
+
+export type PricingRule = {
+  rule_id: number
+  field_id: number
+  name: string
+  start_time: string
+  end_time: string
+  price_per_hour: number
+  days_of_week: string
+  is_active: boolean
+}
+
+export type FieldDetail = Field & {
+  images: string[]
+  pricing_rules: PricingRule[]
 }

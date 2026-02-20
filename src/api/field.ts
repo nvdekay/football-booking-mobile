@@ -1,4 +1,5 @@
-import { Field, FieldSearchParams } from '../types/field'
+import { AvailabilityResponse } from '../types/booking'
+import { Field, FieldDetail, FieldSearchParams } from '../types/field'
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1'
 
@@ -33,7 +34,32 @@ export async function getFields(params?: FieldSearchParams): Promise<ApiResponse
   if (params?.min_price !== undefined) searchParams.append('min_price', params.min_price.toString())
   if (params?.max_price !== undefined) searchParams.append('max_price', params.max_price.toString())
   if (params?.rating !== undefined) searchParams.append('rating', params.rating.toString())
+  if (params?.lat !== undefined) searchParams.append('lat', params.lat.toString())
+  if (params?.long !== undefined) searchParams.append('long', params.long.toString())
+  if (params?.sort_by) searchParams.append('sort_by', params.sort_by)
 
   const query = searchParams.toString()
   return request<Field[]>(`/fields${query ? `?${query}` : ''}`)
+}
+
+export async function getFieldById(id: number): Promise<ApiResponse<FieldDetail>> {
+  return request<FieldDetail>(`/fields/${id}`)
+}
+
+export async function getAvailability(fieldId: number, date: string): Promise<ApiResponse<AvailabilityResponse>> {
+  return request<AvailabilityResponse>(`/fields/${fieldId}/availability?date=${date}`)
+}
+
+export async function addFavorite(fieldId: number, token: string): Promise<ApiResponse<null>> {
+  return request<null>(`/fields/${fieldId}/favorite`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function removeFavorite(fieldId: number, token: string): Promise<ApiResponse<null>> {
+  return request<null>(`/fields/${fieldId}/favorite`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  })
 }

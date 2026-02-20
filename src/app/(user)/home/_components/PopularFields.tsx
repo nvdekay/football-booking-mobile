@@ -6,6 +6,7 @@ import { Field } from '../../../../types/field';
 type PopularFieldsProps = {
     fields: Field[];
     loading: boolean;
+    onFieldPress?: (field: Field) => void;
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -25,13 +26,13 @@ function formatPrice(price: string): string {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '₫';
 }
 
-const FieldCard = ({ field }: { field: Field }) => {
+const FieldCard = ({ field, onPress }: { field: Field; onPress?: () => void }) => {
     const ratingNum = parseFloat(field.rating_avg);
     const typeLabel = TYPE_LABELS[field.type] || `Sân ${field.type}`;
     const typeColor = TYPE_COLORS[field.type] || '#089166';
 
     return (
-        <TouchableOpacity className="flex-col w-full bg-white dark:bg-[#1a2e26] rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800">
+        <TouchableOpacity onPress={onPress} className="flex-col w-full bg-white dark:bg-[#1a2e26] rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800">
             {field.image_url ? (
                 <ImageBackground
                     source={{ uri: field.image_url }}
@@ -86,6 +87,14 @@ const FieldCard = ({ field }: { field: Field }) => {
                                 {field.address}
                             </Text>
                         </View>
+                        {field.distance != null && (
+                            <View className="flex-row items-center gap-1 mt-1">
+                                <MaterialIcons name="near-me" size={14} color="#64748b" />
+                                <Text className="text-slate-400 dark:text-slate-500 text-xs">
+                                    Cách bạn {field.distance.toFixed(2)}km
+                                </Text>
+                            </View>
+                        )}
                     </View>
                     <View className="items-end">
                         <Text className="text-primary font-bold text-lg leading-tight">
@@ -122,7 +131,7 @@ const FieldCard = ({ field }: { field: Field }) => {
     );
 };
 
-export const PopularFields = ({ fields, loading }: PopularFieldsProps) => {
+export const PopularFields = ({ fields, loading, onFieldPress }: PopularFieldsProps) => {
     return (
         <View className="flex-col px-4 gap-4 mt-4 pb-8">
             <Text className="text-slate-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] text-left">
@@ -139,7 +148,7 @@ export const PopularFields = ({ fields, loading }: PopularFieldsProps) => {
                     <Text className="text-slate-400 text-sm">Không tìm thấy sân bóng nào</Text>
                 </View>
             ) : (
-                fields.map((field) => <FieldCard key={field.field_id} field={field} />)
+                fields.map((field) => <FieldCard key={field.field_id} field={field} onPress={() => onFieldPress?.(field)} />)
             )}
         </View>
     );
