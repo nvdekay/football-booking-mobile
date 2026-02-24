@@ -41,6 +41,10 @@ export default function ProfileScreen() {
     );
   };
 
+  const handleEditProfile = () => {
+    router.navigate('/(user)/profile/edit-profile' as any);
+  };
+
   const handleSettings = () => {
     Alert.alert('Settings', 'This feature will be updated soon');
   };
@@ -81,7 +85,7 @@ export default function ProfileScreen() {
         <ProfileHeader />
 
         {/* User Information */}
-        <ProfileInfo user={user} />
+        <ProfileInfo user={user} onEdit={handleEditProfile} />
 
         {/* Wallet Card */}
         <WalletCard
@@ -92,7 +96,8 @@ export default function ProfileScreen() {
         {/* Menu List */}
         <MenuList
           onSettings={handleSettings}
-          onTransactionHistory={() => router.navigate({ pathname: '/(user)/profile/wallet' as any, params: { tab: 'history' } })}
+          onTransactionHistory={() => router.navigate('/(user)/profile/wallet' as any)}
+          onPersonalInfo={handleEditProfile}
         />
 
         {/* Logout Button */}

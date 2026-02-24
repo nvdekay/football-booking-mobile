@@ -32,3 +32,9 @@ export type LoginResponseData = {
     token: string
     user: User
 }
+
+export type UpdateProfileBody = {
+    full_name?: string
+    phone_number?: string
+    avatar_url?: string
+}

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import * as AuthApi from '../api/auth'
-import { LoginBody, RegisterBody, User } from '../types/auth'
+import { LoginBody, RegisterBody, UpdateProfileBody, User } from '../types/auth'
 
 type AuthState = {
   token: string | null
@@ -16,6 +16,7 @@ type AuthContextValue = AuthState & {
   verifyEmail: (email: string, code: string) => Promise<void>
   resendVerification: (email: string) => Promise<void>
   refreshUser: () => Promise<void>
+  updateProfile: (body: UpdateProfileBody) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -93,6 +94,18 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
     await AuthApi.resendVerification(email)
   }
 
+  const updateProfile = async (body: UpdateProfileBody) => {
+    if (!token) throw new Error('No token available')
+
+    const response = await AuthApi.updateProfile(token, body)
+    if (response.success && response.data) {
+      setUser(response.data)
+      await AsyncStorage.setItem(USER_KEY, JSON.stringify(response.data))
+    } else {
+      throw new Error(response.message || 'Failed to update profile')
+    }
+  }
+
   const refreshUser = async () => {
     if (!token) throw new Error('No token available')
 
@@ -117,6 +130,7 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
         verifyEmail,
         resendVerification,
         refreshUser,
+        updateProfile,
       }}
     >
       {children}

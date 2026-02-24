@@ -1,4 +1,4 @@
-import { AuthResponse, LoginBody, LoginResponseData, RegisterBody, User } from '../types/auth'
+import { AuthResponse, LoginBody, LoginResponseData, RegisterBody, UpdateProfileBody, User } from '../types/auth'
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1'
 
@@ -53,5 +53,15 @@ export async function getMe(token: string) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  })
+}
+
+export async function updateProfile(token: string, body: UpdateProfileBody) {
+  return request<User>('/auth/me', {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
   })
 }

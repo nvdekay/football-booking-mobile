@@ -1,5 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -48,13 +48,9 @@ const TRANSACTION_CONFIG: Record<string, { icon: keyof typeof MaterialIcons.glyp
 };
 
 export default function WalletScreen() {
-    const { tab: initialTab } = useLocalSearchParams<{ tab?: string }>();
-    const router = useRouter();
     const { token, user, refreshUser } = useAuth();
 
-    const [activeTab, setActiveTab] = useState<'topup' | 'history'>(
-        initialTab === 'history' ? 'history' : 'topup'
-    );
+    const [activeTab, setActiveTab] = useState<'topup' | 'history'>('topup');
 
     // Top-up state
     const [amount, setAmount] = useState<number | null>(null);
@@ -120,7 +116,7 @@ export default function WalletScreen() {
                 try {
                     await refreshUser();
                 } catch {
-                    // Navigation context may be temporarily unavailable after browser
+                    // Context may be temporarily unavailable after browser
                 }
                 Alert.alert('Thông báo', 'Vui lòng kiểm tra số dư ví sau khi thanh toán');
             }
