@@ -57,7 +57,7 @@ export function QRCodeModal({ visible, booking, onClose }: QRCodeModalProps) {
                     {/* Header */}
                     <View className="flex-row items-center justify-between mb-4">
                         <Text className="text-lg font-bold text-slate-900 dark:text-white">
-                            Mã QR Check-in
+                            Mã QR điểm danh
                         </Text>
                         <TouchableOpacity onPress={onClose}>
                             <MaterialIcons name="close" size={24} color="#94a3b8" />
@@ -115,7 +115,7 @@ export function QRCodeModal({ visible, booking, onClose }: QRCodeModalProps) {
                             <View className="flex-row items-center gap-2 mt-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl px-4 py-3">
                                 <MaterialIcons name="info-outline" size={16} color="#3b82f6" />
                                 <Text className="text-xs text-blue-700 dark:text-blue-300 flex-1">
-                                    Xuất trình mã QR này tại sân để check-in
+                                    Xuất trình mã QR này tại sân để điểm danh
                                 </Text>
                             </View>
                         </View>

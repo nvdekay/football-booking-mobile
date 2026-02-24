@@ -32,9 +32,9 @@ export const HomeHeader = ({ onWalletPress }: HomeHeaderProps) => {
                     <View className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-background-dark" />
                 </View>
                 <View className="flex-col">
-                    <Text className="text-xs text-slate-500 dark:text-slate-400 font-medium">Welcome back,</Text>
+                    <Text className="text-xs text-slate-500 dark:text-slate-400 font-medium">Chào mừng trở lại,</Text>
                     <Text className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
-                        {user?.full_name ?? 'User'}
+                        {user?.full_name ?? 'Người dùng'}
                     </Text>
                 </View>
             </View>

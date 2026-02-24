@@ -26,12 +26,12 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     Alert.alert(
-      'Log Out',
-      'Are you sure you want to log out?',
+      'Đăng xuất',
+      'Bạn có chắc chắn muốn đăng xuất?',
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Hủy', style: 'cancel' },
         {
-          text: 'Log Out',
+          text: 'Đăng xuất',
           style: 'destructive',
           onPress: async () => {
             await logout();
@@ -46,7 +46,7 @@ export default function ProfileScreen() {
   };
 
   const handleSettings = () => {
-    Alert.alert('Settings', 'This feature will be updated soon');
+    Alert.alert('Cài đặt', 'Tính năng này sẽ được cập nhật sớm');
   };
 
   useEffect(() => {

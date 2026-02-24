@@ -39,39 +39,39 @@ export const MenuList: React.FC<MenuListProps> = ({ onSettings, onTransactionHis
     return (
         <View className="flex flex-col px-4 gap-1">
             <Text className="px-2 pb-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                Account Settings
+                Cài đặt tài khoản
             </Text>
 
             <MenuItem
                 icon="person-outline"
-                title="Personal Information"
-                subtitle="Manage your account details"
+                title="Thông tin cá nhân"
+                subtitle="Quản lý thông tin tài khoản"
                 onPress={onPersonalInfo}
             />
 
             <MenuItem
                 icon="receipt-outline"
-                title="Transaction History"
-                subtitle="View your payments and top-ups"
+                title="Lịch sử giao dịch"
+                subtitle="Xem thanh toán và nạp tiền"
                 onPress={onTransactionHistory}
             />
 
             <MenuItem
                 icon="football-outline"
-                title="My Matches"
-                subtitle="Upcoming bookings and past games"
+                title="Trận đấu của tôi"
+                subtitle="Lịch đặt sắp tới và đã qua"
             />
 
             <MenuItem
                 icon="notifications-outline"
-                title="Notifications"
-                subtitle="Alerts, updates and reminders"
+                title="Thông báo"
+                subtitle="Cảnh báo, cập nhật và nhắc nhở"
             />
 
             <MenuItem
                 icon="options-outline"
-                title="App Settings"
-                subtitle="Language, theme, and privacy"
+                title="Cài đặt ứng dụng"
+                subtitle="Ngôn ngữ, giao diện và quyền riêng tư"
                 onPress={onSettings}
             />
         </View>

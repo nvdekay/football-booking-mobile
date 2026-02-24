@@ -29,15 +29,15 @@ export const ProfileInfo: React.FC<ProfileInfoProps> = ({ user, onEdit }) => {
 
       <View className="flex flex-col items-center gap-1">
         <Text className="text-2xl font-bold tracking-tight text-[#111816]">
-          {user?.full_name || 'Alex Sterling'}
+          {user?.full_name || 'Người dùng'}
         </Text>
         <View className="flex-row items-center gap-2">
           <View className="bg-[#0df2aa]/20 px-3 py-0.5 rounded-full">
             <Text className="text-emerald-700 text-xs font-bold tracking-wider">
-              {user?.role || 'PLAYER'}
+              {user?.role || 'NGƯỜI CHƠI'}
             </Text>
           </View>
-          <Text className="text-slate-500 text-sm">• Member since 2023</Text>
+          <Text className="text-slate-500 text-sm">• Thành viên từ 2023</Text>
         </View>
       </View>
     </View>

@@ -10,9 +10,9 @@ type PopularFieldsProps = {
 };
 
 const TYPE_LABELS: Record<string, string> = {
-    '5': '5-a-side',
-    '7': '7-a-side',
-    '11': '11-a-side',
+    '5': 'Sân 5',
+    '7': 'Sân 7',
+    '11': 'Sân 11',
 };
 
 const TYPE_COLORS: Record<string, string> = {

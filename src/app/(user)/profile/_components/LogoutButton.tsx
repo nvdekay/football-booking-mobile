@@ -14,7 +14,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ onLogout }) => {
                 className="flex-row items-center gap-2 px-6 py-2.5 rounded-full active:bg-rose-50"
             >
                 <Ionicons name="log-out-outline" size={20} color="#f43f5e" />
-                <Text className="text-rose-500 font-semibold text-lg">Log Out</Text>
+                <Text className="text-rose-500 font-semibold text-lg">Đăng xuất</Text>
             </TouchableOpacity>
         </View>
     );

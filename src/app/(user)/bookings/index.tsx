@@ -86,7 +86,7 @@ export default function BookingsScreen() {
                         Lịch Đặt
                     </Text>
                     <Text className="text-xs text-slate-400 mt-1">
-                        Quản lý các trận đấu và mã QR check-in
+                        Quản lý các trận đấu và mã QR điểm danh
                     </Text>
                 </View>
 
