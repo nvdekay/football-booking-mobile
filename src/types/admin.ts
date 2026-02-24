@@ -1,4 +1,4 @@
-import { FieldType } from './field'
+import { FieldStatus, FieldType } from './field'
 
 // === Analytics ===
 export type BookingStatusCount = {
@@ -20,7 +20,7 @@ export type CreateFieldBody = {
   field_number: number
   description?: string
   image_url?: string
-  status?: 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE'
+  status?: FieldStatus
 }
 
 export type UpdateFieldBody = {
@@ -31,7 +31,7 @@ export type UpdateFieldBody = {
   field_number?: number
   description?: string
   image_url?: string
-  status?: 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE'
+  status?: FieldStatus
 }
 
 // === Pricing Rules ===

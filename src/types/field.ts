@@ -1,5 +1,8 @@
 export type FieldType = '5' | '7' | '11'
 
+// Maps to DB ENUM('READY_TO_BOOK', 'BOOKED')
+export type FieldStatus = 'READY_TO_BOOK' | 'BOOKED'
+
 export type Field = {
   field_id: number
   name: string
@@ -8,7 +11,7 @@ export type Field = {
   image_url: string | null
   description: string
   address: string
-  status: string
+  status: FieldStatus
   field_number: number
   rating_avg: string
   total_reviews: number

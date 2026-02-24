@@ -15,7 +15,7 @@ import {
 } from 'react-native'
 import { createField } from '../../../api/admin'
 import { useAuth } from '../../../context/AuthContext'
-import { FieldType } from '../../../types/field'
+import { FieldStatus, FieldType } from '../../../types/field'
 
 const FIELD_TYPES: { value: FieldType; label: string }[] = [
   { value: '5', label: 'Sân 5' },
@@ -24,9 +24,8 @@ const FIELD_TYPES: { value: FieldType; label: string }[] = [
 ]
 
 const STATUS_OPTIONS = [
-  { value: 'ACTIVE', label: 'Hoạt động' },
-  { value: 'MAINTENANCE', label: 'Bảo trì' },
-  { value: 'INACTIVE', label: 'Ngưng hoạt động' },
+  { value: 'READY_TO_BOOK', label: 'Sẵn sàng đặt' },
+  { value: 'BOOKED', label: 'Đã đặt' },
 ] as const
 
 export default function CreateFieldScreen() {
@@ -38,7 +37,7 @@ export default function CreateFieldScreen() {
   const [address, setAddress] = useState('')
   const [fieldNumber, setFieldNumber] = useState('')
   const [pricePerHour, setPricePerHour] = useState('')
-  const [status, setStatus] = useState<'ACTIVE' | 'MAINTENANCE' | 'INACTIVE'>('ACTIVE')
+  const [status, setStatus] = useState<FieldStatus>('READY_TO_BOOK')
   const [description, setDescription] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -65,19 +64,17 @@ export default function CreateFieldScreen() {
 
     try {
       setSubmitting(true)
-      await createField(
-        {
-          name: name.trim(),
-          type,
-          address: address.trim(),
-          price_per_hour: price,
-          field_number: fieldNum,
-          status,
-          description: description.trim() || undefined,
-          image_url: imageUrl.trim() || undefined,
-        },
-        token
-      )
+      const body: Parameters<typeof createField>[0] = {
+        name: name.trim(),
+        type,
+        address: address.trim(),
+        price_per_hour: price,
+        field_number: fieldNum,
+        description: description.trim() || undefined,
+        image_url: imageUrl.trim() || undefined,
+      }
+      body.status = status
+      await createField(body, token)
       Alert.alert('Thành công', 'Tạo sân mới thành công!', [
         { text: 'OK', onPress: () => router.back() },
       ])
