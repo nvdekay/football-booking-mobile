@@ -215,6 +215,8 @@ export default function CreateFieldScreen() {
             value={imageUrl}
             onChangeText={setImageUrl}
             autoCapitalize="none"
+            autoCorrect={false}
+            spellCheck={false}
           />
 
           <TouchableOpacity

@@ -65,7 +65,7 @@ export default function EditProfileScreen() {
           <Text className="text-lg font-bold text-[#111816]">Thông tin cá nhân</Text>
         </View>
 
-        <ScrollView className="flex-1" contentContainerStyle={{ padding: 16, gap: 20 }}>
+        <ScrollView className="flex-1" contentContainerStyle={{ padding: 16, gap: 20 }} keyboardShouldPersistTaps="handled">
           {/* Full Name */}
           <View className="gap-2">
             <Text className="text-sm font-semibold text-slate-600">Họ và tên</Text>

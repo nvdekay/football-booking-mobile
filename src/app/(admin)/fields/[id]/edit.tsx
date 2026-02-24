@@ -314,6 +314,8 @@ export default function EditFieldScreen() {
               value={imageUrl}
               onChangeText={setImageUrl}
               autoCapitalize="none"
+              autoCorrect={false}
+              spellCheck={false}
             />
           </View>
 

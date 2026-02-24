@@ -7,6 +7,7 @@ import {
   RevenueStats,
   Service,
   UpdateFieldBody,
+  UpdateServiceBody,
 } from '../types/admin'
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1'
@@ -104,12 +105,30 @@ export async function getServices(): Promise<ApiResponse<Service[]>> {
   return request<Service[]>('/services')
 }
 
+export async function getServicesAdmin(token: string): Promise<ApiResponse<Service[]>> {
+  return request<Service[]>('/services/all', {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
 export async function createService(
   body: CreateServiceBody,
   token: string
 ): Promise<ApiResponse<Service>> {
   return request<Service>('/services', {
     method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
+  })
+}
+
+export async function updateService(
+  serviceId: number,
+  body: UpdateServiceBody,
+  token: string
+): Promise<ApiResponse<null>> {
+  return request<null>(`/services/${serviceId}`, {
+    method: 'PUT',
     headers: { Authorization: `Bearer ${token}` },
     body: JSON.stringify(body),
   })

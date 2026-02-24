@@ -34,7 +34,7 @@ export default function RegisterScreen() {
   return (
     <View className="flex-1 bg-[#f5f8f7] dark:bg-[#10221c]">
       <SafeAreaView className="flex-1">
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1">
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1" keyboardShouldPersistTaps="handled">
           <View className="relative flex w-full flex-col overflow-hidden pb-8">
 
             {/* TopAppBar */}
@@ -96,6 +96,8 @@ export default function RegisterScreen() {
                       onChangeText={setEmail}
                       autoCapitalize="none"
                       keyboardType="email-address"
+                      autoCorrect={false}
+                      spellCheck={false}
                     />
                     <View className="absolute left-4 top-0 bottom-0 justify-center">
                       <MaterialIcons name="mail" size={24} color="#499c82" />
@@ -136,6 +138,8 @@ export default function RegisterScreen() {
                       value={password}
                       onChangeText={setPassword}
                       secureTextEntry={!showPassword}
+                      autoCorrect={false}
+                      spellCheck={false}
                     />
                     <View className="absolute left-4 top-0 bottom-0 justify-center">
                       <MaterialIcons name="lock" size={24} color="#499c82" />

@@ -216,7 +216,7 @@ export default function WalletScreen() {
 
                 {/* Tab content */}
                 {activeTab === 'topup' ? (
-                    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                    <ScrollView className="flex-1" showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
                         {/* Preset amounts */}
                         <View className="mx-5 mt-4">
                             <Text className="text-sm font-bold text-slate-900 dark:text-white mb-3">

@@ -44,13 +44,15 @@ export type CreatePricingRuleBody = {
 }
 
 // === Services ===
+export type ServiceStatus = 'AVAILABLE' | 'UNAVAILABLE'
+
 export type Service = {
   service_id: number
   name: string
   price: number | string
   unit: string
   image_url: string | null
-  status: string
+  status: ServiceStatus
 }
 
 export type CreateServiceBody = {
@@ -58,6 +60,14 @@ export type CreateServiceBody = {
   price: number
   unit: string
   image_url?: string
+}
+
+export type UpdateServiceBody = {
+  name?: string
+  price?: number
+  unit?: string
+  image_url?: string
+  status?: ServiceStatus
 }
 
 // === Users ===
