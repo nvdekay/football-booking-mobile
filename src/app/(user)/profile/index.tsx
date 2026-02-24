@@ -86,13 +86,13 @@ export default function ProfileScreen() {
         {/* Wallet Card */}
         <WalletCard
           balance={user?.wallet_balance ?? 0}
-          onTopup={() => router.push('/(user)/profile/wallet' as any)}
+          onTopup={() => router.navigate('/(user)/profile/wallet' as any)}
         />
 
         {/* Menu List */}
         <MenuList
           onSettings={handleSettings}
-          onTransactionHistory={() => router.push({ pathname: '/(user)/profile/wallet' as any, params: { tab: 'history' } })}
+          onTransactionHistory={() => router.navigate({ pathname: '/(user)/profile/wallet' as any, params: { tab: 'history' } })}
         />
 
         {/* Logout Button */}

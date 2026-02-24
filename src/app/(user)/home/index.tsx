@@ -95,7 +95,7 @@ export default function HomeScreen() {
         <View className="flex-1 bg-background-light dark:bg-background-dark">
             <StatusBar style="auto" />
             <SafeAreaView edges={['top']} className="flex-1">
-                <HomeHeader />
+                <HomeHeader onWalletPress={() => router.navigate('/(user)/profile/wallet' as any)} />
 
                 <ScrollView
                     className="flex-1"

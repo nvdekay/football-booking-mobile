@@ -117,7 +117,11 @@ export default function WalletScreen() {
 
             if (response.data.payment_url) {
                 await WebBrowser.openBrowserAsync(response.data.payment_url);
-                await refreshUser();
+                try {
+                    await refreshUser();
+                } catch {
+                    // Navigation context may be temporarily unavailable after browser
+                }
                 Alert.alert('Thông báo', 'Vui lòng kiểm tra số dư ví sau khi thanh toán');
             }
         } catch (err: any) {
