@@ -155,7 +155,7 @@ export default function WalletScreen() {
                     </Text>
                 </View>
                 <Text className="text-sm font-bold" style={{ color: config.color }}>
-                    {config.prefix}{formatPrice(item.amount)}
+                    {config.prefix}{formatPrice(Math.abs(item.amount))}
                 </Text>
             </View>
         );

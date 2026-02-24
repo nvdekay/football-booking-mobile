@@ -8,6 +8,7 @@ type BookingCardProps = {
     booking: Booking;
     onShowQr: (booking: Booking) => void;
     onShowCancel: (booking: Booking) => void;
+    onPayment: (booking: Booking) => void;
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bgClass: string }> = {
@@ -23,13 +24,41 @@ function formatPrice(price: number): string {
     return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '₫';
 }
 
-export function BookingCard({ booking, onShowQr, onShowCancel }: BookingCardProps) {
+function getPaymentDeadlineInfo(bookingDate: string): { daysLeft: number; text: string; isUrgent: boolean } {
+    const match = new Date(bookingDate);
+    match.setHours(0, 0, 0, 0);
+
+    const deadline = new Date(match);
+    deadline.setDate(deadline.getDate() - 2);
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    const diffMs = deadline.getTime() - now.getTime();
+    const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (daysLeft <= 0) {
+        return { daysLeft: 0, text: 'Hạn thanh toán đã hết! Sân sẽ bị hủy tự động.', isUrgent: true };
+    } else if (daysLeft === 1) {
+        return { daysLeft, text: 'Còn 1 ngày để thanh toán!', isUrgent: true };
+    } else if (daysLeft <= 3) {
+        return { daysLeft, text: `Còn ${daysLeft} ngày để thanh toán`, isUrgent: true };
+    } else {
+        return { daysLeft, text: `Còn ${daysLeft} ngày để thanh toán`, isUrgent: false };
+    }
+}
+
+export function BookingCard({ booking, onShowQr, onShowCancel, onPayment }: BookingCardProps) {
     const status = STATUS_CONFIG[booking.status] || {
         label: booking.status,
         color: '#6b7280',
         bgClass: 'bg-gray-100 dark:bg-gray-800/50',
     };
+
+    const isPendingPayment = booking.status === 'PENDING_PAYMENT';
     const isConfirmed = booking.status === 'CONFIRMED';
+
+    const deadlineInfo = isPendingPayment ? getPaymentDeadlineInfo(booking.booking_date) : null;
 
     return (
         <View className="mx-5 mb-3 bg-white dark:bg-[#1a2e26] rounded-2xl border border-slate-100 dark:border-slate-800 p-4">
@@ -77,23 +106,68 @@ export function BookingCard({ booking, onShowQr, onShowCancel }: BookingCardProp
                 </Text>
             </View>
 
-            {/* Action buttons for CONFIRMED bookings */}
-            {isConfirmed && (
+            {/* Deadline warning for PENDING_PAYMENT */}
+            {isPendingPayment && deadlineInfo && (
+                <View className={`flex-row items-center gap-2 mt-3 p-2.5 rounded-xl ${
+                    deadlineInfo.isUrgent
+                        ? 'bg-red-50 dark:bg-red-900/20'
+                        : 'bg-amber-50 dark:bg-amber-900/20'
+                }`}>
+                    <MaterialIcons
+                        name={deadlineInfo.isUrgent ? 'warning' : 'schedule'}
+                        size={16}
+                        color={deadlineInfo.isUrgent ? '#ef4444' : '#d97706'}
+                    />
+                    <Text className={`text-xs font-semibold flex-1 ${
+                        deadlineInfo.isUrgent
+                            ? 'text-red-600 dark:text-red-400'
+                            : 'text-amber-700 dark:text-amber-400'
+                    }`}>
+                        {deadlineInfo.text}
+                    </Text>
+                </View>
+            )}
+
+            {/* Deposit info for PENDING_PAYMENT */}
+            {isPendingPayment && (
+                <View className="flex-row items-center justify-between mt-2 px-1">
+                    <Text className="text-xs text-slate-400">Tiền cọc (30%)</Text>
+                    <Text className="text-xs font-bold text-primary">
+                        {formatPrice(booking.deposit_amount)}
+                    </Text>
+                </View>
+            )}
+
+            {/* Action buttons for PENDING_PAYMENT */}
+            {isPendingPayment && (
                 <View className="flex-row gap-3 mt-3">
                     <TouchableOpacity
-                        onPress={() => onShowQr(booking)}
+                        onPress={() => onPayment(booking)}
                         className="flex-1 flex-row items-center justify-center gap-2 bg-primary rounded-xl py-3"
                     >
-                        <MaterialIcons name="qr-code-2" size={18} color="white" />
-                        <Text className="text-white text-sm font-bold">Lấy mã QR</Text>
+                        <MaterialIcons name="account-balance-wallet" size={18} color="white" />
+                        <Text className="text-white text-sm font-bold">Thanh toán</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         onPress={() => onShowCancel(booking)}
-                        className="flex-1 flex-row items-center justify-center gap-2 bg-red-50 dark:bg-red-900/20 rounded-xl py-3"
+                        className="flex-row items-center justify-center gap-1.5 bg-red-50 dark:bg-red-900/20 rounded-xl py-3 px-4"
                     >
                         <MaterialIcons name="cancel" size={18} color="#ef4444" />
-                        <Text className="text-red-500 text-sm font-bold">Hủy sân</Text>
+                        <Text className="text-red-500 text-sm font-bold">Hủy</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
+            {/* Action buttons for CONFIRMED bookings - QR only, no cancel */}
+            {isConfirmed && (
+                <View className="mt-3">
+                    <TouchableOpacity
+                        onPress={() => onShowQr(booking)}
+                        className="flex-row items-center justify-center gap-2 bg-primary rounded-xl py-3"
+                    >
+                        <MaterialIcons name="qr-code-2" size={18} color="white" />
+                        <Text className="text-white text-sm font-bold">Lấy mã QR điểm danh</Text>
                     </TouchableOpacity>
                 </View>
             )}

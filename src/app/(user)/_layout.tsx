@@ -1,9 +1,22 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs, useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
 import { Platform } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
 
 export default function UserLayout() {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (loading) return;
+        if (!user) {
+            router.replace('/(auth)/login' as any);
+        } else if (user.role === 'ADMIN') {
+            router.replace('/(admin)/dashboard' as any);
+        }
+    }, [user, loading]);
+
     return (
         <Tabs
             screenOptions={{

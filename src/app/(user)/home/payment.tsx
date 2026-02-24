@@ -1,7 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import * as WebBrowser from 'expo-web-browser';
 import React, { useState } from 'react';
 import {
     ActivityIndicator,
@@ -15,17 +14,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { initiatePayment } from '../../../api/booking';
 import { useAuth } from '../../../context/AuthContext';
-import { PaymentMethod } from '../../../types/booking';
 
 function formatPrice(price: number): string {
     return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '₫';
 }
-
-const PAYMENT_METHODS: { method: PaymentMethod; label: string; icon: keyof typeof MaterialIcons.glyphMap; desc: string }[] = [
-    { method: 'WALLET', label: 'Ví tiền', icon: 'account-balance-wallet', desc: 'Thanh toán bằng số dư ví' },
-    { method: 'VNPAY', label: 'VNPay', icon: 'credit-card', desc: 'Thanh toán qua VNPay' },
-    { method: 'MOMO', label: 'MoMo', icon: 'phone-android', desc: 'Thanh toán qua MoMo' },
-];
 
 export default function PaymentScreen() {
     const {
@@ -46,17 +38,37 @@ export default function PaymentScreen() {
         duration: string;
     }>();
     const router = useRouter();
-    const { token, refreshUser } = useAuth();
+    const { token, user, refreshUser } = useAuth();
 
-    const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>('WALLET');
     const [processing, setProcessing] = useState(false);
+
+    const deposit = parseFloat(depositAmount);
+    const total = parseFloat(totalPrice);
+    const walletBalance = user?.wallet_balance ?? 0;
+    const isBalanceSufficient = walletBalance >= deposit;
 
     const handlePayment = async () => {
         if (!token) return;
+
+        if (!isBalanceSufficient) {
+            Alert.alert(
+                'Số dư không đủ',
+                `Số dư ví hiện tại: ${formatPrice(walletBalance)}\nSố tiền cần thanh toán: ${formatPrice(deposit)}\n\nVui lòng nạp thêm tiền vào ví.`,
+                [
+                    { text: 'Hủy', style: 'cancel' },
+                    {
+                        text: 'Nạp tiền',
+                        onPress: () => router.push('/(user)/profile/wallet' as any),
+                    },
+                ]
+            );
+            return;
+        }
+
         try {
             setProcessing(true);
             const response = await initiatePayment(
-                { booking_id: Number(bookingId), method: selectedMethod },
+                { booking_id: Number(bookingId), method: 'WALLET' },
                 token,
             );
 
@@ -65,10 +77,6 @@ export default function PaymentScreen() {
                 Alert.alert('Thành công', 'Đặt sân thành công! Bạn có thể xem chi tiết trong Lịch Đặt.', [
                     { text: 'OK', onPress: () => router.replace('/(user)/bookings' as any) },
                 ]);
-            } else if (response.data.payment_url) {
-                await WebBrowser.openBrowserAsync(response.data.payment_url);
-                await refreshUser();
-                router.replace('/(user)/bookings' as any);
             }
         } catch (err: any) {
             Alert.alert('Lỗi', err.message || 'Thanh toán thất bại');
@@ -76,9 +84,6 @@ export default function PaymentScreen() {
             setProcessing(false);
         }
     };
-
-    const deposit = parseFloat(depositAmount);
-    const total = parseFloat(totalPrice);
 
     return (
         <View className="flex-1 bg-background-light dark:bg-background-dark">
@@ -131,57 +136,60 @@ export default function PaymentScreen() {
                         </Text>
                     </View>
 
-                    {/* Payment Methods */}
+                    {/* Wallet Payment Info */}
                     <View className="mx-5 mt-5">
                         <Text className="text-base font-bold text-slate-900 dark:text-white mb-3">
-                            Phương thức thanh toán
+                            Thanh toán bằng ví
                         </Text>
-                        <View className="gap-3">
-                            {PAYMENT_METHODS.map(({ method, label, icon, desc }) => {
-                                const isSelected = method === selectedMethod;
-                                return (
+
+                        {/* Wallet balance card */}
+                        <View className={`p-4 rounded-xl border ${
+                            isBalanceSufficient
+                                ? 'bg-primary/5 border-primary'
+                                : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700'
+                        }`}>
+                            <View className="flex-row items-center gap-3">
+                                <View className={`w-10 h-10 rounded-full items-center justify-center ${
+                                    isBalanceSufficient ? 'bg-primary/15' : 'bg-red-100 dark:bg-red-900/30'
+                                }`}>
+                                    <MaterialIcons
+                                        name="account-balance-wallet"
+                                        size={22}
+                                        color={isBalanceSufficient ? '#089166' : '#ef4444'}
+                                    />
+                                </View>
+                                <View className="flex-1">
+                                    <Text className={`text-sm font-bold ${
+                                        isBalanceSufficient ? 'text-primary' : 'text-red-500'
+                                    }`}>
+                                        Số dư ví
+                                    </Text>
+                                    <Text className={`text-lg font-bold mt-0.5 ${
+                                        isBalanceSufficient
+                                            ? 'text-slate-900 dark:text-white'
+                                            : 'text-red-500'
+                                    }`}>
+                                        {formatPrice(walletBalance)}
+                                    </Text>
+                                </View>
+                                {isBalanceSufficient && (
+                                    <MaterialIcons name="check-circle" size={24} color="#089166" />
+                                )}
+                            </View>
+
+                            {!isBalanceSufficient && (
+                                <View className="mt-3 pt-3 border-t border-red-200 dark:border-red-800">
+                                    <Text className="text-xs text-red-500 mb-2">
+                                        Số dư không đủ. Bạn cần nạp thêm {formatPrice(deposit - walletBalance)} để thanh toán.
+                                    </Text>
                                     <TouchableOpacity
-                                        key={method}
-                                        onPress={() => setSelectedMethod(method)}
-                                        className={`flex-row items-center p-4 rounded-xl border ${
-                                            isSelected
-                                                ? 'bg-primary/5 border-primary'
-                                                : 'bg-white dark:bg-[#1a2e26] border-slate-200 dark:border-slate-700'
-                                        }`}
+                                        onPress={() => router.push('/(user)/profile/wallet' as any)}
+                                        className="bg-red-500 rounded-lg py-2 items-center"
                                     >
-                                        <View
-                                            className={`w-10 h-10 rounded-full items-center justify-center ${
-                                                isSelected ? 'bg-primary/15' : 'bg-slate-100 dark:bg-slate-800'
-                                            }`}
-                                        >
-                                            <MaterialIcons
-                                                name={icon}
-                                                size={22}
-                                                color={isSelected ? '#089166' : '#94a3b8'}
-                                            />
-                                        </View>
-                                        <View className="flex-1 ml-3">
-                                            <Text
-                                                className={`text-sm font-bold ${
-                                                    isSelected
-                                                        ? 'text-primary'
-                                                        : 'text-slate-900 dark:text-white'
-                                                }`}
-                                            >
-                                                {label}
-                                            </Text>
-                                            <Text className="text-xs text-slate-400 mt-0.5">{desc}</Text>
-                                        </View>
-                                        <View
-                                            className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
-                                                isSelected ? 'border-primary' : 'border-slate-300 dark:border-slate-600'
-                                            }`}
-                                        >
-                                            {isSelected && <View className="w-2.5 h-2.5 rounded-full bg-primary" />}
-                                        </View>
+                                        <Text className="text-white text-sm font-bold">Nạp tiền ngay</Text>
                                     </TouchableOpacity>
-                                );
-                            })}
+                                </View>
+                            )}
                         </View>
                     </View>
 
@@ -192,14 +200,20 @@ export default function PaymentScreen() {
                 <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#0d1c17] border-t border-slate-100 dark:border-slate-800 px-5 pb-8 pt-4">
                     <TouchableOpacity
                         onPress={handlePayment}
-                        disabled={processing}
+                        disabled={processing || !isBalanceSufficient}
                         className={`rounded-xl py-4 items-center flex-row justify-center gap-2 ${
-                            processing ? 'bg-slate-300 dark:bg-slate-700' : 'bg-primary'
+                            processing || !isBalanceSufficient
+                                ? 'bg-slate-300 dark:bg-slate-700'
+                                : 'bg-primary'
                         }`}
                     >
                         {processing && <ActivityIndicator size="small" color="white" />}
                         <Text className="text-white text-base font-bold">
-                            {processing ? 'Đang xử lý...' : `Thanh toán ${formatPrice(deposit)}`}
+                            {processing
+                                ? 'Đang xử lý...'
+                                : !isBalanceSufficient
+                                    ? 'Số dư không đủ'
+                                    : `Thanh toán ${formatPrice(deposit)}`}
                         </Text>
                     </TouchableOpacity>
                 </View>

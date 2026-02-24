@@ -1,5 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useState } from 'react';
 import {
@@ -12,18 +12,24 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { getMyBookings } from '../../../api/booking';
+import { getMyBookings, initiatePayment } from '../../../api/booking';
 import { useAuth } from '../../../context/AuthContext';
 import { Booking } from '../../../types/booking';
 import { BookingCard } from './_components/BookingCard';
 import { CancelModal } from './_components/CancelModal';
 import { QRCodeModal } from './_components/QRCodeModal';
 
+function formatPrice(price: number): string {
+    return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '₫';
+}
+
 export default function BookingsScreen() {
-    const { token } = useAuth();
+    const { token, user, refreshUser } = useAuth();
+    const router = useRouter();
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [paying, setPaying] = useState(false);
 
     // QR modal state
     const [qrModalVisible, setQrModalVisible] = useState(false);
@@ -43,7 +49,6 @@ export default function BookingsScreen() {
         }
     }, [token]);
 
-    // Refresh data when screen comes into focus
     useFocusEffect(
         useCallback(() => {
             (async () => {
@@ -76,6 +81,58 @@ export default function BookingsScreen() {
         fetchBookings();
     };
 
+    const handlePayment = async (booking: Booking) => {
+        if (!token || !user) return;
+
+        const walletBalance = user.wallet_balance ?? 0;
+        const deposit = booking.deposit_amount;
+
+        if (walletBalance < deposit) {
+            Alert.alert(
+                'Số dư không đủ',
+                `Số dư ví: ${formatPrice(walletBalance)}\nCần thanh toán: ${formatPrice(deposit)}\n\nVui lòng nạp thêm tiền vào ví.`,
+                [
+                    { text: 'Hủy', style: 'cancel' },
+                    {
+                        text: 'Nạp tiền',
+                        onPress: () => router.push('/(user)/profile/wallet' as any),
+                    },
+                ]
+            );
+            return;
+        }
+
+        Alert.alert(
+            'Xác nhận thanh toán',
+            `Thanh toán tiền cọc ${formatPrice(deposit)} cho sân ${booking.field_name}?\n\nSố dư ví sau thanh toán: ${formatPrice(walletBalance - deposit)}`,
+            [
+                { text: 'Hủy', style: 'cancel' },
+                {
+                    text: 'Thanh toán',
+                    onPress: async () => {
+                        try {
+                            setPaying(true);
+                            const response = await initiatePayment(
+                                { booking_id: booking.booking_id, method: 'WALLET' },
+                                token,
+                            );
+
+                            if (response.data.status === 'SUCCESS') {
+                                await refreshUser();
+                                Alert.alert('Thành công', 'Thanh toán thành công! Sân đã được xác nhận.');
+                                fetchBookings();
+                            }
+                        } catch (err: any) {
+                            Alert.alert('Lỗi', err.message || 'Thanh toán thất bại');
+                        } finally {
+                            setPaying(false);
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
     return (
         <View className="flex-1 bg-background-light dark:bg-background-dark">
             <StatusBar style="auto" />
@@ -89,6 +146,18 @@ export default function BookingsScreen() {
                         Quản lý các trận đấu và mã QR điểm danh
                     </Text>
                 </View>
+
+                {/* Loading overlay for payment */}
+                {paying && (
+                    <View className="absolute top-0 left-0 right-0 bottom-0 z-50 bg-black/30 items-center justify-center">
+                        <View className="bg-white dark:bg-[#1a2e26] rounded-2xl p-6 items-center">
+                            <ActivityIndicator size="large" color="#089166" />
+                            <Text className="text-sm font-semibold text-slate-700 dark:text-white mt-3">
+                                Đang thanh toán...
+                            </Text>
+                        </View>
+                    </View>
+                )}
 
                 {/* Content */}
                 {loading ? (
@@ -104,6 +173,7 @@ export default function BookingsScreen() {
                                 booking={item}
                                 onShowQr={handleShowQr}
                                 onShowCancel={handleShowCancel}
+                                onPayment={handlePayment}
                             />
                         )}
                         contentContainerStyle={{ paddingTop: 4, paddingBottom: 100 }}

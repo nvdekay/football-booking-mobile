@@ -39,7 +39,7 @@ export type CreateBookingResponse = {
   deposit_amount: number
 }
 
-export type PaymentMethod = 'WALLET' | 'VNPAY' | 'MOMO'
+export type PaymentMethod = 'WALLET'
 
 export type InitiatePaymentBody = {
   booking_id: number
