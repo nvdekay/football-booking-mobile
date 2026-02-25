@@ -15,8 +15,21 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     ...options.headers,
   }
 
-  const response = await fetch(url, { ...options, headers })
-  const data = await response.json()
+  let response: Response
+  try {
+    response = await fetch(url, { ...options, headers })
+  } catch (err: any) {
+    throw new Error(err?.message === 'Network request failed'
+      ? 'Không có kết nối mạng. Vui lòng kiểm tra lại.'
+      : 'Lỗi kết nối đến máy chủ')
+  }
+
+  let data: any
+  try {
+    data = await response.json()
+  } catch {
+    throw new Error('Phản hồi không hợp lệ từ máy chủ')
+  }
 
   if (!response.ok || (data && data.success === false)) {
     throw new Error(data?.message || 'Something went wrong')
@@ -34,7 +47,14 @@ export async function topupWallet(body: TopupBody, token: string): Promise<ApiRe
 }
 
 export async function getWalletHistory(token: string): Promise<ApiResponse<WalletTransaction[]>> {
-  return request<WalletTransaction[]>('/wallet/history', {
+  const result = await request<WalletTransaction[]>('/wallet/history', {
     headers: { Authorization: `Bearer ${token}` },
   })
+
+  // Ensure data is always an array
+  if (!Array.isArray(result?.data)) {
+    result.data = []
+  }
+
+  return result
 }

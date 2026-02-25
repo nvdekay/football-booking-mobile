@@ -2,7 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-function formatPrice(price: number): string {
+function formatPrice(price: number | null | undefined): string {
+    if (price == null || isNaN(price)) return '0₫';
     return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '₫';
 }
 
@@ -13,27 +14,34 @@ interface WalletCardProps {
 
 export const WalletCard: React.FC<WalletCardProps> = ({ balance, onTopup }) => {
     return (
-        <View className="px-6 pb-6">
-            <View className="flex-row items-center justify-between gap-4 rounded-xl bg-[#10221c] p-5 shadow-lg relative overflow-hidden">
-                {/* Abstract decorative background */}
-                <View className="absolute top-0 right-0 w-32 h-32 bg-[#0df2aa]/10 rounded-full -mr-16 -mt-16" />
+        <View className="px-4 pb-5">
+            <View className="relative overflow-hidden rounded-2xl bg-[#0d1c17] p-5">
+                {/* Decorative circles */}
+                <View className="absolute -right-5 -top-10 w-48 h-48 rounded-full bg-[#089166]/20 opacity-60" />
+                <View className="absolute -left-5 -bottom-10 w-32 h-32 rounded-full bg-[#089166]/10 opacity-40" />
 
-                <View className="flex flex-col gap-2 relative z-10">
-                    <Text className="text-slate-400 text-xs font-medium uppercase tracking-widest">
-                        Số dư ví
-                    </Text>
-                    <Text className="text-white text-3xl font-bold leading-none">
-                        {formatPrice(balance)}
-                    </Text>
+                <View className="relative z-10 flex-row items-center justify-between">
+                    <View className="flex flex-col gap-1.5">
+                        <Text className="text-[#089166] text-xs font-semibold uppercase tracking-widest">
+                            Số dư ví
+                        </Text>
+                        <View className="flex-row items-baseline">
+                            <Text className="text-white text-3xl font-extrabold leading-none">
+                                {formatPrice(balance).replace('₫', '')}
+                            </Text>
+                            <Text className="text-xl font-bold text-[#089166] ml-0.5">₫</Text>
+                        </View>
+                    </View>
+
+                    <TouchableOpacity
+                        onPress={onTopup}
+                        activeOpacity={0.85}
+                        className="flex-row items-center justify-center rounded-xl h-11 px-5 bg-[#089166] gap-2"
+                    >
+                        <Ionicons name="add-circle-outline" size={20} color="#0d1c17" />
+                        <Text className="text-[#0d1c17] font-bold text-sm">Nạp tiền</Text>
+                    </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity
-                    onPress={onTopup}
-                    className="flex-row items-center justify-center rounded-lg h-11 px-5 bg-[#0df2aa] gap-2 z-10"
-                >
-                    <Ionicons name="add-circle-outline" size={20} color="#10221c" />
-                    <Text className="text-[#10221c] font-bold text-sm">Nạp tiền</Text>
-                </TouchableOpacity>
             </View>
         </View>
     );
