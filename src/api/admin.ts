@@ -1,5 +1,6 @@
 import { Field } from '../types/field'
 import {
+  AdminBooking,
   AdminUser,
   CreateFieldBody,
   CreatePricingRuleBody,
@@ -141,6 +142,27 @@ export async function deleteService(
   return request<null>(`/services/${serviceId}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+// ==================== Bookings (Check-in) ====================
+
+export async function getConfirmedBookings(
+  token: string
+): Promise<ApiResponse<AdminBooking[]>> {
+  return request<AdminBooking[]>('/bookings/admin/confirmed', {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function processCheckIn(
+  checkInCode: string,
+  token: string
+): Promise<ApiResponse<AdminBooking>> {
+  return request<AdminBooking>('/bookings/admin/check-in', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ check_in_code: checkInCode }),
   })
 }
 

@@ -16,6 +16,12 @@ const MENU_ITEMS = [
     icon: 'room-service' as const,
     route: '/(admin)/manage/services',
   },
+  {
+    title: 'Check-in đặt sân',
+    description: 'Xác nhận check-in cho khách đã thanh toán',
+    icon: 'qr-code-scanner' as const,
+    route: '/(admin)/manage/bookings',
+  },
 ]
 
 export default function ManageIndexScreen() {

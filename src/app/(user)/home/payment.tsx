@@ -75,7 +75,17 @@ export default function PaymentScreen() {
             if (response.data.status === 'SUCCESS') {
                 await refreshUser();
                 Alert.alert('Thành công', 'Đặt sân thành công! Bạn có thể xem chi tiết trong Lịch Đặt.', [
-                    { text: 'OK', onPress: () => router.replace('/(user)/bookings' as any) },
+                    {
+                        text: 'Xem lịch đặt',
+                        onPress: () => {
+                            // Dismiss payment screen khỏi home stack, quay về trang chủ
+                            if (router.canDismiss()) {
+                                router.dismissAll();
+                            }
+                            // Chuyển sang tab lịch đặt
+                            router.navigate('/(user)/bookings' as any);
+                        },
+                    },
                 ]);
             }
         } catch (err: any) {

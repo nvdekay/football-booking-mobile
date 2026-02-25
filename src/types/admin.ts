@@ -70,6 +70,27 @@ export type UpdateServiceBody = {
   status?: ServiceStatus
 }
 
+// === Bookings ===
+export type AdminBooking = {
+  booking_id: number
+  user_id: number
+  field_id: number
+  booking_date: string
+  start_time: string
+  end_time: string
+  total_price: number
+  deposit_amount: number
+  status: string
+  payment_status: string
+  check_in_code: string
+  check_in_time: string | null
+  field_name: string
+  address: string
+  user_name: string
+  user_phone: string
+  created_at: string
+}
+
 // === Users ===
 export type AdminUser = {
   user_id: number

@@ -159,8 +159,8 @@ export function BookingCard({ booking, onShowQr, onShowCancel, onPayment }: Book
                 </View>
             )}
 
-            {/* Action buttons for CONFIRMED bookings - QR only, no cancel */}
-            {isConfirmed && (
+            {/* Action buttons for CONFIRMED bookings */}
+            {isConfirmed && !booking.check_in_time && (
                 <View className="mt-3">
                     <TouchableOpacity
                         onPress={() => onShowQr(booking)}
@@ -169,6 +169,21 @@ export function BookingCard({ booking, onShowQr, onShowCancel, onPayment }: Book
                         <MaterialIcons name="qr-code-2" size={18} color="white" />
                         <Text className="text-white text-sm font-bold">Lấy mã QR điểm danh</Text>
                     </TouchableOpacity>
+                </View>
+            )}
+
+            {/* Checked-in banner */}
+            {isConfirmed && !!booking.check_in_time && (
+                <View className="flex-row items-center gap-2 mt-3 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20">
+                    <MaterialIcons name="check-circle" size={20} color="#089166" />
+                    <View className="flex-1">
+                        <Text className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
+                            Sẵn sàng để đá
+                        </Text>
+                        <Text className="text-xs text-emerald-600 dark:text-emerald-500 mt-0.5">
+                            Đã check-in thành công
+                        </Text>
+                    </View>
                 </View>
             )}
         </View>

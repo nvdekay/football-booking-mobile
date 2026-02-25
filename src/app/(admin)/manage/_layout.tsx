@@ -7,6 +7,7 @@ export default function ManageLayout() {
             <Stack.Screen name="index" />
             <Stack.Screen name="users" />
             <Stack.Screen name="services" />
+            <Stack.Screen name="bookings" />
         </Stack>
     );
 }

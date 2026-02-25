@@ -64,6 +64,7 @@ export type Booking = {
   status: string
   payment_status: string
   check_in_code: string
+  check_in_time?: string | null
   field_name: string
   address: string
   created_at: string
