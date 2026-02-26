@@ -1,7 +1,9 @@
 import { Field } from '../types/field'
 import {
   AdminBooking,
+  AdminBookingDetail,
   AdminUser,
+  BookingStatus,
   CreateFieldBody,
   CreatePricingRuleBody,
   CreateServiceBody,
@@ -141,6 +143,47 @@ export async function deleteService(
 ): Promise<ApiResponse<null>> {
   return request<null>(`/services/${serviceId}`, {
     method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+// ==================== Bookings (Admin Management) ====================
+
+export async function getAllBookingsAdmin(
+  token: string
+): Promise<ApiResponse<AdminBooking[]>> {
+  return request<AdminBooking[]>('/bookings/admin/all', {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function getBookingDetailAdmin(
+  bookingId: number,
+  token: string
+): Promise<ApiResponse<AdminBookingDetail>> {
+  return request<AdminBookingDetail>(`/bookings/admin/${bookingId}/detail`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function adminUpdateBookingStatus(
+  bookingId: number,
+  status: BookingStatus,
+  token: string
+): Promise<ApiResponse<null>> {
+  return request<null>(`/bookings/admin/${bookingId}/status`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ status }),
+  })
+}
+
+export async function adminRefundBooking(
+  bookingId: number,
+  token: string
+): Promise<ApiResponse<null>> {
+  return request<null>(`/bookings/admin/${bookingId}/refund`, {
+    method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   })
 }

@@ -71,6 +71,23 @@ export type UpdateServiceBody = {
 }
 
 // === Bookings ===
+export type BookingStatus = 'PENDING_PAYMENT' | 'DEPOSIT_PAID' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'REFUNDED'
+export type PaymentStatus = 'UNPAID' | 'PARTIAL' | 'PAID' | 'REFUNDED'
+
+export type BookingServiceDetail = {
+  booking_service_id: number
+  service_id: number
+  quantity: number
+  price_at_booking: number
+  service_name: string
+  unit: string
+}
+
+export type AdminBookingDetail = AdminBooking & {
+  services: BookingServiceDetail[]
+  cancellation_reason: string | null
+}
+
 export type AdminBooking = {
   booking_id: number
   user_id: number

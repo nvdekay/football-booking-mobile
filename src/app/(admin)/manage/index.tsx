@@ -17,9 +17,9 @@ const MENU_ITEMS = [
     route: '/(admin)/manage/services',
   },
   {
-    title: 'Check-in đặt sân',
-    description: 'Xác nhận check-in cho khách đã thanh toán',
-    icon: 'qr-code-scanner' as const,
+    title: 'Quản lý đặt sân',
+    description: 'Quản lý, xác nhận, hủy và hoàn tiền booking',
+    icon: 'event-note' as const,
     route: '/(admin)/manage/bookings',
   },
 ]
