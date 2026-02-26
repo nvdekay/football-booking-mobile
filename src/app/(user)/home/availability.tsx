@@ -67,7 +67,18 @@ export default function AvailabilityScreen() {
             try {
                 setLoading(true);
                 const response = await getAvailability(Number(fieldId), selectedDate);
-                setSlots(response.data.slots);
+                let fetchedSlots = response.data.slots;
+
+                // Client-side safety: filter out past slots for today
+                if (selectedDate === getTodayString()) {
+                    const currentHour = new Date().getHours();
+                    fetchedSlots = fetchedSlots.filter((slot) => {
+                        const slotHour = parseInt(slot.start.substring(0, 2), 10);
+                        return slotHour > currentHour;
+                    });
+                }
+
+                setSlots(fetchedSlots);
                 setSelectedStartSlot(null);
             } catch (err: any) {
                 Alert.alert('Lỗi', err.message || 'Không thể tải lịch trống');
@@ -240,7 +251,11 @@ export default function AvailabilityScreen() {
                         ) : slots.length === 0 ? (
                             <View className="py-8 items-center gap-2">
                                 <MaterialIcons name="event-busy" size={48} color="#94a3b8" />
-                                <Text className="text-slate-400 text-sm">Không có khung giờ nào</Text>
+                                <Text className="text-slate-400 text-sm text-center px-4">
+                                    {selectedDate === getTodayString()
+                                        ? 'Không còn khung giờ trống cho hôm nay.\nVui lòng chọn ngày khác.'
+                                        : 'Không có khung giờ nào'}
+                                </Text>
                             </View>
                         ) : (
                             <View className="flex-row flex-wrap gap-2">
