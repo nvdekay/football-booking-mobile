@@ -16,12 +16,24 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bgClass: str
     DEPOSIT_PAID: { label: 'Đã cọc', color: '#2563eb', bgClass: 'bg-blue-50 dark:bg-blue-900/20' },
     CONFIRMED: { label: 'Đã xác nhận', color: '#089166', bgClass: 'bg-emerald-50 dark:bg-emerald-900/20' },
     CANCELLED: { label: 'Đã hủy', color: '#ef4444', bgClass: 'bg-red-50 dark:bg-red-900/20' },
-    COMPLETED: { label: 'Hoàn thành', color: '#6b7280', bgClass: 'bg-gray-100 dark:bg-gray-800/50' },
+    COMPLETED: { label: 'Đã đá', color: '#0891b2', bgClass: 'bg-cyan-50 dark:bg-cyan-900/20' },
     REFUNDED: { label: 'Đã hoàn tiền', color: '#8b5cf6', bgClass: 'bg-violet-50 dark:bg-violet-900/20' },
 };
 
 function formatPrice(price: number): string {
     return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '₫';
+}
+
+/**
+ * Check if a booking's playing time has passed (client-side fallback).
+ * Returns true if current time > booking_date + end_time.
+ * Uses Date object to handle timezone correctly (avoids split('T')[0] UTC date shift).
+ */
+function isBookingExpired(booking: Booking): boolean {
+    const bookingDate = new Date(booking.booking_date);
+    const [h, m, s] = booking.end_time.split(':').map(Number);
+    bookingDate.setHours(h, m, s || 0, 0);
+    return new Date() > bookingDate;
 }
 
 function getPaymentDeadlineInfo(bookingDate: string): { daysLeft: number; text: string; isUrgent: boolean } {
@@ -49,14 +61,22 @@ function getPaymentDeadlineInfo(bookingDate: string): { daysLeft: number; text: 
 }
 
 export function BookingCard({ booking, onShowQr, onShowCancel, onPayment }: BookingCardProps) {
-    const status = STATUS_CONFIG[booking.status] || {
-        label: booking.status,
-        color: '#6b7280',
-        bgClass: 'bg-gray-100 dark:bg-gray-800/50',
-    };
-
-    const isPendingPayment = booking.status === 'PENDING_PAYMENT';
+    const isCompleted = booking.status === 'COMPLETED';
     const isConfirmed = booking.status === 'CONFIRMED';
+    const isPendingPayment = booking.status === 'PENDING_PAYMENT';
+
+    // Client-side fallback: if CONFIRMED but time has passed, show as "Đã đá"
+    const expired = isConfirmed && isBookingExpired(booking);
+
+    const status = expired
+        ? STATUS_CONFIG['COMPLETED']
+        : STATUS_CONFIG[booking.status] || {
+              label: booking.status,
+              color: '#6b7280',
+              bgClass: 'bg-gray-100 dark:bg-gray-800/50',
+          };
+
+    const showExpiredBanner = isCompleted || expired;
 
     const deadlineInfo = isPendingPayment ? getPaymentDeadlineInfo(booking.booking_date) : null;
 
@@ -159,8 +179,8 @@ export function BookingCard({ booking, onShowQr, onShowCancel, onPayment }: Book
                 </View>
             )}
 
-            {/* Action buttons for CONFIRMED bookings */}
-            {isConfirmed && !booking.check_in_time && (
+            {/* Action buttons for CONFIRMED bookings (only if not expired) */}
+            {isConfirmed && !expired && !booking.check_in_time && (
                 <View className="mt-3">
                     <TouchableOpacity
                         onPress={() => onShowQr(booking)}
@@ -172,8 +192,8 @@ export function BookingCard({ booking, onShowQr, onShowCancel, onPayment }: Book
                 </View>
             )}
 
-            {/* Checked-in banner */}
-            {isConfirmed && !!booking.check_in_time && (
+            {/* Checked-in banner (only if not expired) */}
+            {isConfirmed && !expired && !!booking.check_in_time && (
                 <View className="flex-row items-center gap-2 mt-3 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20">
                     <MaterialIcons name="check-circle" size={20} color="#089166" />
                     <View className="flex-1">
@@ -182,6 +202,21 @@ export function BookingCard({ booking, onShowQr, onShowCancel, onPayment }: Book
                         </Text>
                         <Text className="text-xs text-emerald-600 dark:text-emerald-500 mt-0.5">
                             Đã check-in thành công
+                        </Text>
+                    </View>
+                </View>
+            )}
+
+            {/* "Đã đá" banner for expired/completed bookings */}
+            {showExpiredBanner && (
+                <View className="flex-row items-center gap-2 mt-3 p-3 rounded-xl bg-cyan-50 dark:bg-cyan-900/20">
+                    <MaterialIcons name="sports-soccer" size={20} color="#0891b2" />
+                    <View className="flex-1">
+                        <Text className="text-sm font-bold text-cyan-700 dark:text-cyan-400">
+                            Đã qua giờ đá
+                        </Text>
+                        <Text className="text-xs text-cyan-600 dark:text-cyan-500 mt-0.5">
+                            Booking này đã hết thời gian thi đấu
                         </Text>
                     </View>
                 </View>
