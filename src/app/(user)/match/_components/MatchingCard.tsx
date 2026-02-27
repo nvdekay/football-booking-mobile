@@ -55,21 +55,21 @@ export function MatchingCard({ matching, onPress }: Props) {
             </View>
 
             {/* Field (if available) */}
-            {matching.field_name && (
+            {matching.field_name ? (
                 <View className="flex-row items-center gap-2 mb-2">
                     <MaterialIcons name="location-on" size={18} color="#089166" />
                     <Text className="text-sm text-slate-600 dark:text-slate-400" numberOfLines={1}>
                         {matching.field_name}
                     </Text>
                 </View>
-            )}
+            ) : null}
 
             {/* Description preview */}
-            {matching.description && (
+            {matching.description ? (
                 <Text className="text-xs text-slate-400 mt-1" numberOfLines={2}>
                     {matching.description}
                 </Text>
-            )}
+            ) : null}
         </TouchableOpacity>
     );
 }

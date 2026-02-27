@@ -15,11 +15,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
+    acceptChallenger,
     cancelMatching,
     confirmMatching,
     getMatchingById,
     joinMatching,
     leaveMatching,
+    rejectChallenger,
 } from '../../../api/matching';
 import { useAuth } from '../../../context/AuthContext';
 import { MatchParticipant, TeamMatchingDetail } from '../../../types/matching';
@@ -83,14 +85,43 @@ export default function MatchDetailScreen() {
     };
 
     const handleJoin = () => {
-        Alert.alert('Xác nhận', 'Bạn muốn tham gia kèo đấu này?', [
+        Alert.alert('Xác nhận', 'Gửi yêu cầu tham gia kèo đấu này? Chủ kèo sẽ duyệt yêu cầu của bạn.', [
             { text: 'Hủy', style: 'cancel' },
             {
-                text: 'Tham gia',
+                text: 'Gửi yêu cầu',
                 onPress: () =>
                     handleAction(
                         () => joinMatching(parseInt(id), token!),
-                        'Đã tham gia kèo đấu!'
+                        'Đã gửi yêu cầu tham gia! Chờ chủ kèo chấp nhận.'
+                    ),
+            },
+        ]);
+    };
+
+    const handleAccept = () => {
+        Alert.alert('Chấp nhận đối thủ', 'Bạn muốn chấp nhận đối thủ này vào kèo?', [
+            { text: 'Hủy', style: 'cancel' },
+            {
+                text: 'Chấp nhận',
+                onPress: () =>
+                    handleAction(
+                        () => acceptChallenger(parseInt(id), token!),
+                        'Đã chấp nhận đối thủ!'
+                    ),
+            },
+        ]);
+    };
+
+    const handleReject = () => {
+        Alert.alert('Từ chối đối thủ', 'Bạn muốn từ chối đối thủ này?', [
+            { text: 'Hủy', style: 'cancel' },
+            {
+                text: 'Từ chối',
+                style: 'destructive',
+                onPress: () =>
+                    handleAction(
+                        () => rejectChallenger(parseInt(id), token!),
+                        'Đã từ chối đối thủ'
                     ),
             },
         ]);
@@ -166,12 +197,12 @@ export default function MatchDetailScreen() {
     const isChallenger = myParticipant?.role === 'CHALLENGER';
     const isParticipant = !!myParticipant;
 
-    const hostParticipant = matching.participants.find(
-        (p: MatchParticipant) => p.role === 'HOST'
-    );
     const challengerParticipant = matching.participants.find(
         (p: MatchParticipant) => p.role === 'CHALLENGER'
     );
+
+    // Pending challenger = there's a CHALLENGER while status is still OPEN
+    const hasPendingChallenger = matching.status === 'OPEN' && !!challengerParticipant;
 
     return (
         <View className="flex-1 bg-background-light dark:bg-background-dark">
@@ -211,7 +242,7 @@ export default function MatchDetailScreen() {
                                     {formatTime(matching.start_time)} | {matching.duration_minutes} phút
                                 </Text>
                             </View>
-                            {matching.field_name && (
+                            {matching.field_name ? (
                                 <View className="flex-row items-center gap-2">
                                     <MaterialIcons name="location-on" size={18} color="#089166" />
                                     <Text className="text-sm text-slate-600 dark:text-slate-400 flex-1">
@@ -219,15 +250,15 @@ export default function MatchDetailScreen() {
                                         {matching.field_address ? ` - ${matching.field_address}` : ''}
                                     </Text>
                                 </View>
-                            )}
-                            {matching.description && (
+                            ) : null}
+                            {matching.description ? (
                                 <View className="flex-row items-start gap-2">
                                     <MaterialIcons name="notes" size={18} color="#089166" />
                                     <Text className="text-sm text-slate-600 dark:text-slate-400 flex-1">
                                         {matching.description}
                                     </Text>
                                 </View>
-                            )}
+                            ) : null}
                         </View>
                     </View>
 
@@ -250,28 +281,35 @@ export default function MatchDetailScreen() {
                                     </Text>
                                 </View>
                             </View>
-                            {hostParticipant && (
-                                <View className="flex-row items-center gap-2">
-                                    {matching.host_confirmed && (
-                                        <MaterialIcons name="check-circle" size={20} color="#089166" />
-                                    )}
-                                    <TouchableOpacity
-                                        onPress={() => handleCall(matching.host_phone)}
-                                        className="bg-primary/10 rounded-full p-2"
-                                    >
-                                        <MaterialIcons name="phone" size={18} color="#089166" />
-                                    </TouchableOpacity>
-                                </View>
-                            )}
+                            <View className="flex-row items-center gap-2">
+                                {!!matching.host_confirmed && (
+                                    <MaterialIcons name="check-circle" size={20} color="#089166" />
+                                )}
+                                <TouchableOpacity
+                                    onPress={() => handleCall(matching.host_phone)}
+                                    className="bg-primary/10 rounded-full p-2"
+                                >
+                                    <MaterialIcons name="phone" size={18} color="#089166" />
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
 
-                    {/* Challenger Info */}
-                    {challengerParticipant && (
+                    {/* Challenger Info / Pending Request */}
+                    {challengerParticipant ? (
                         <View className="mx-5 mt-4 bg-white dark:bg-[#1a2e26] rounded-2xl p-4 border border-slate-100 dark:border-slate-800">
-                            <Text className="text-base font-bold text-slate-900 dark:text-white mb-3">
-                                Đối thủ
-                            </Text>
+                            <View className="flex-row items-center justify-between mb-3">
+                                <Text className="text-base font-bold text-slate-900 dark:text-white">
+                                    {hasPendingChallenger ? 'Yêu cầu tham gia' : 'Đối thủ'}
+                                </Text>
+                                {hasPendingChallenger && (
+                                    <View className="px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30">
+                                        <Text className="text-xs font-semibold text-amber-700 dark:text-amber-400">
+                                            Chờ duyệt
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
                             <View className="flex-row items-center justify-between">
                                 <View className="flex-row items-center gap-2">
                                     <View className="w-10 h-10 rounded-full bg-blue-500/10 items-center justify-center">
@@ -287,7 +325,7 @@ export default function MatchDetailScreen() {
                                     </View>
                                 </View>
                                 <View className="flex-row items-center gap-2">
-                                    {matching.challenger_confirmed && (
+                                    {!!matching.challenger_confirmed && (
                                         <MaterialIcons name="check-circle" size={20} color="#089166" />
                                     )}
                                     <TouchableOpacity
@@ -298,8 +336,32 @@ export default function MatchDetailScreen() {
                                     </TouchableOpacity>
                                 </View>
                             </View>
+
+                            {/* Host accept/reject buttons for pending challenger */}
+                            {isHost && hasPendingChallenger && (
+                                <View className="flex-row gap-3 mt-4">
+                                    <TouchableOpacity
+                                        onPress={handleReject}
+                                        disabled={actionLoading}
+                                        className="flex-1 border border-red-300 dark:border-red-700 rounded-xl py-3 items-center"
+                                    >
+                                        <Text className="text-red-500 text-sm font-bold">
+                                            Từ chối
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={handleAccept}
+                                        disabled={actionLoading}
+                                        className="flex-1 bg-primary rounded-xl py-3 items-center"
+                                    >
+                                        <Text className="text-white text-sm font-bold">
+                                            Chấp nhận
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
-                    )}
+                    ) : null}
 
                     {/* Cancel reason input */}
                     {showCancelInput && (
@@ -326,16 +388,26 @@ export default function MatchDetailScreen() {
                         </View>
                     ) : (
                         <View className="gap-2">
-                            {/* Join button: not participant & OPEN */}
-                            {!isParticipant && matching.status === 'OPEN' && (
+                            {/* Join button: not participant & not host & OPEN & no pending challenger */}
+                            {!isParticipant && !isHost && matching.status === 'OPEN' && !hasPendingChallenger && (
                                 <TouchableOpacity
                                     onPress={handleJoin}
                                     className="bg-primary rounded-xl py-4 items-center"
                                 >
                                     <Text className="text-white text-base font-bold">
-                                        Tham gia kèo
+                                        Gửi yêu cầu tham gia
                                     </Text>
                                 </TouchableOpacity>
+                            )}
+
+                            {/* Challenger pending indicator */}
+                            {isChallenger && matching.status === 'OPEN' && (
+                                <View className="bg-amber-50 dark:bg-amber-900/20 rounded-xl py-4 items-center flex-row justify-center gap-2">
+                                    <MaterialIcons name="hourglass-top" size={20} color="#f59e0b" />
+                                    <Text className="text-amber-700 dark:text-amber-400 text-base font-bold">
+                                        Đang chờ chủ kèo duyệt
+                                    </Text>
+                                </View>
                             )}
 
                             {/* Confirm button: participant & MATCHED & not yet confirmed */}
@@ -351,7 +423,7 @@ export default function MatchDetailScreen() {
                             )}
 
                             {/* Already confirmed indicator */}
-                            {isParticipant && matching.status === 'MATCHED' && myParticipant?.confirmed && (
+                            {isParticipant && matching.status === 'MATCHED' && !!myParticipant?.confirmed && (
                                 <View className="bg-primary/10 rounded-xl py-4 items-center flex-row justify-center gap-2">
                                     <MaterialIcons name="check-circle" size={20} color="#089166" />
                                     <Text className="text-primary text-base font-bold">
@@ -360,8 +432,8 @@ export default function MatchDetailScreen() {
                                 </View>
                             )}
 
-                            {/* Leave button: challenger & MATCHED */}
-                            {isChallenger && matching.status === 'MATCHED' && (
+                            {/* Leave button: challenger & (OPEN pending or MATCHED) */}
+                            {isChallenger && ['OPEN', 'MATCHED'].includes(matching.status) && (
                                 <TouchableOpacity
                                     onPress={handleLeave}
                                     className="border border-red-300 dark:border-red-700 rounded-xl py-4 items-center"
@@ -372,8 +444,8 @@ export default function MatchDetailScreen() {
                                 </TouchableOpacity>
                             )}
 
-                            {/* Edit button: host & OPEN */}
-                            {isHost && matching.status === 'OPEN' && (
+                            {/* Edit button: host & OPEN & no pending challenger */}
+                            {isHost && matching.status === 'OPEN' && !hasPendingChallenger && (
                                 <TouchableOpacity
                                     onPress={() =>
                                         router.push({
@@ -389,7 +461,7 @@ export default function MatchDetailScreen() {
                                 </TouchableOpacity>
                             )}
 
-                            {/* Cancel button: host OPEN, or participant MATCHED/CONFIRMED */}
+                            {/* Cancel button: host OPEN/MATCHED/CONFIRMED, or challenger MATCHED/CONFIRMED */}
                             {((isHost && ['OPEN', 'MATCHED', 'CONFIRMED'].includes(matching.status)) ||
                                 (isChallenger && ['MATCHED', 'CONFIRMED'].includes(matching.status))) && (
                                 <TouchableOpacity

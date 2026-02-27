@@ -84,6 +84,26 @@ export async function joinMatching(
   })
 }
 
+export async function acceptChallenger(
+  id: number,
+  token: string
+): Promise<ApiResponse<TeamMatchingDetail>> {
+  return request<TeamMatchingDetail>(`/team-matchings/${id}/accept`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function rejectChallenger(
+  id: number,
+  token: string
+): Promise<ApiResponse<TeamMatchingDetail>> {
+  return request<TeamMatchingDetail>(`/team-matchings/${id}/reject`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
 export async function leaveMatching(
   id: number,
   token: string
