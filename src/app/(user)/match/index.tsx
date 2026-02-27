@@ -100,31 +100,28 @@ export default function MatchFeedScreen() {
             <StatusBar style="auto" />
             <SafeAreaView edges={['top']} className="flex-1">
                 {/* Header */}
-                <View className="px-5 py-4 flex-row items-center justify-between">
-                    <View>
+                <View className="bg-white dark:bg-background-dark border-b border-emerald-100 dark:border-emerald-900/30 px-4">
+                    <View className="flex-row items-center justify-between py-4">
+                        <View className="size-10 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950/30">
+                            <MaterialIcons name="search" size={22} color="#089166" />
+                        </View>
                         <Text className="text-xl font-bold text-slate-900 dark:text-white">
-                            Tìm Kèo
+                            Tìm đối tác
                         </Text>
-                        <Text className="text-xs text-slate-400 mt-1">
-                            Tìm đối thủ và ghép trận đấu
-                        </Text>
+                        <TouchableOpacity className="relative size-10 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950/30">
+                            <MaterialIcons name="notifications" size={22} color="#089166" />
+                            <View className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity
-                        onPress={handleCreatePress}
-                        className="bg-primary rounded-xl px-4 py-2.5 flex-row items-center gap-1.5"
-                    >
-                        <MaterialIcons name="add" size={18} color="white" />
-                        <Text className="text-sm font-semibold text-white">Tạo kèo</Text>
-                    </TouchableOpacity>
-                </View>
 
-                {/* Filters */}
-                <FilterBar
-                    selectedDate={selectedDate}
-                    selectedLevel={selectedLevel}
-                    onDateChange={setSelectedDate}
-                    onLevelChange={setSelectedLevel}
-                />
+                    {/* Date selector + Level filters */}
+                    <FilterBar
+                        selectedDate={selectedDate}
+                        selectedLevel={selectedLevel}
+                        onDateChange={setSelectedDate}
+                        onLevelChange={setSelectedLevel}
+                    />
+                </View>
 
                 {/* Content */}
                 {loading ? (
@@ -138,7 +135,11 @@ export default function MatchFeedScreen() {
                         renderItem={({ item }) => (
                             <MatchingCard matching={item} onPress={handleMatchPress} />
                         )}
-                        contentContainerStyle={{ paddingTop: 4, paddingBottom: 100 }}
+                        contentContainerStyle={{
+                            paddingTop: 16,
+                            paddingBottom: 100,
+                            paddingHorizontal: 16,
+                        }}
                         showsVerticalScrollIndicator={false}
                         refreshControl={
                             <RefreshControl
@@ -170,6 +171,22 @@ export default function MatchFeedScreen() {
                         }
                     />
                 )}
+
+                {/* FAB - Create Match */}
+                <TouchableOpacity
+                    onPress={handleCreatePress}
+                    className="absolute bottom-6 right-5 size-14 bg-primary rounded-full items-center justify-center z-30"
+                    style={{
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.3,
+                        shadowRadius: 8,
+                        elevation: 8,
+                    }}
+                    activeOpacity={0.8}
+                >
+                    <MaterialIcons name="add" size={30} color="white" />
+                </TouchableOpacity>
             </SafeAreaView>
         </View>
     );

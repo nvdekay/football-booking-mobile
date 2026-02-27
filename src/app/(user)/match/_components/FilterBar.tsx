@@ -1,15 +1,19 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
-import { Platform, Text, TouchableOpacity, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { MatchLevel } from '../../../../types/matching';
 
-const LEVELS: { value: MatchLevel | null; label: string }[] = [
-    { value: null, label: 'Tất cả' },
+const LEVELS: { value: MatchLevel; label: string }[] = [
     { value: 'VUI_VE', label: 'Vui vẻ' },
     { value: 'BAN_CHUYEN', label: 'Bán chuyên' },
     { value: 'CHUYEN_NGHIEP', label: 'Chuyên nghiệp' },
 ];
+
+type DateChip = {
+    topLabel: string;
+    day: number;
+    bottomLabel: string;
+    value: string;
+};
 
 type Props = {
     selectedDate: string | undefined;
@@ -18,69 +22,123 @@ type Props = {
     onLevelChange: (level: MatchLevel | undefined) => void;
 };
 
-export function FilterBar({ selectedDate, selectedLevel, onDateChange, onLevelChange }: Props) {
-    const [showDatePicker, setShowDatePicker] = useState(false);
+function generateDateChips(): DateChip[] {
+    const today = new Date();
+    const dayAbbr = ['CN', 'Th.2', 'Th.3', 'Th.4', 'Th.5', 'Th.6', 'Th.7'];
+    const chips: DateChip[] = [];
 
-    const handleDateChange = (_event: any, date?: Date) => {
-        setShowDatePicker(Platform.OS === 'ios');
-        if (date) {
-            const formatted = date.toISOString().split('T')[0];
-            onDateChange(formatted);
+    for (let i = 0; i < 5; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+
+        let topLabel: string;
+        if (i === 0) topLabel = 'Hôm nay';
+        else if (i === 1) topLabel = 'Ngày mai';
+        else {
+            const dow = date.getDay();
+            if (dow === 0) topLabel = 'Chủ nhật';
+            else topLabel = `Thứ ${dow + 1}`;
         }
+
+        chips.push({
+            topLabel,
+            day: date.getDate(),
+            bottomLabel: dayAbbr[date.getDay()],
+            value: date.toISOString().split('T')[0],
+        });
+    }
+    return chips;
+}
+
+export function FilterBar({ selectedDate, selectedLevel, onDateChange, onLevelChange }: Props) {
+    const dateChips = useMemo(() => generateDateChips(), []);
+
+    const handleDatePress = (value: string) => {
+        onDateChange(selectedDate === value ? undefined : value);
     };
 
-    const clearDate = () => {
-        onDateChange(undefined);
+    const handleLevelPress = (value: MatchLevel) => {
+        onLevelChange(selectedLevel === value ? undefined : value);
     };
 
     return (
-        <View className="px-5 pb-3">
-            {/* Date filter */}
-            <View className="flex-row items-center gap-2 mb-3">
-                <TouchableOpacity
-                    onPress={() => setShowDatePicker(true)}
-                    className="flex-row items-center gap-1.5 bg-white dark:bg-[#1a2e26] rounded-xl px-3 py-2.5 border border-slate-100 dark:border-slate-800"
-                >
-                    <MaterialIcons name="event" size={18} color="#089166" />
-                    <Text className="text-sm text-slate-700 dark:text-slate-300">
-                        {selectedDate || 'Chọn ngày'}
-                    </Text>
-                </TouchableOpacity>
+        <View className="pb-4">
+            {/* Date chips - horizontal scroll */}
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: 12, paddingBottom: 8 }}
+            >
+                {dateChips.map((chip) => {
+                    const isActive = selectedDate === chip.value;
+                    return (
+                        <TouchableOpacity
+                            key={chip.value}
+                            onPress={() => handleDatePress(chip.value)}
+                            className={`items-center justify-center rounded-2xl ${
+                                isActive
+                                    ? 'bg-primary'
+                                    : 'bg-emerald-50 dark:bg-emerald-900/20'
+                            }`}
+                            style={[
+                                { minWidth: 60, height: 80 },
+                                isActive && {
+                                    shadowColor: '#089166',
+                                    shadowOffset: { width: 0, height: 4 },
+                                    shadowOpacity: 0.2,
+                                    shadowRadius: 8,
+                                    elevation: 4,
+                                },
+                            ]}
+                        >
+                            <Text
+                                className={`font-medium uppercase ${
+                                    isActive ? 'text-white/80' : 'text-slate-500 dark:text-emerald-400'
+                                }`}
+                                style={{ fontSize: 10 }}
+                            >
+                                {chip.topLabel}
+                            </Text>
+                            <Text
+                                className={`text-lg font-bold ${
+                                    isActive ? 'text-white' : 'text-slate-600 dark:text-emerald-400'
+                                }`}
+                            >
+                                {chip.day}
+                            </Text>
+                            <Text
+                                className={`font-medium uppercase ${
+                                    isActive ? 'text-white/80' : 'text-slate-500 dark:text-emerald-400'
+                                }`}
+                                style={{ fontSize: 10 }}
+                            >
+                                {chip.bottomLabel}
+                            </Text>
+                        </TouchableOpacity>
+                    );
+                })}
+            </ScrollView>
 
-                {selectedDate && (
-                    <TouchableOpacity onPress={clearDate} className="p-1">
-                        <MaterialIcons name="close" size={20} color="#94a3b8" />
-                    </TouchableOpacity>
-                )}
-            </View>
-
-            {showDatePicker && (
-                <DateTimePicker
-                    value={selectedDate ? new Date(selectedDate) : new Date()}
-                    mode="date"
-                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
-                    onChange={handleDateChange}
-                    minimumDate={new Date()}
-                />
-            )}
-
-            {/* Level chips */}
-            <View className="flex-row flex-wrap gap-2">
+            {/* Level filter chips */}
+            <View className="flex-row flex-wrap gap-2 mt-4">
                 {LEVELS.map((item) => {
-                    const isActive = selectedLevel === item.value || (!selectedLevel && item.value === null);
+                    const isActive = selectedLevel === item.value;
                     return (
                         <TouchableOpacity
                             key={item.label}
-                            onPress={() => onLevelChange(item.value ?? undefined)}
-                            className={`px-3 py-2 rounded-xl border ${
+                            onPress={() => handleLevelPress(item.value)}
+                            className={`px-4 rounded-full border ${
                                 isActive
-                                    ? 'bg-primary border-primary'
-                                    : 'bg-white dark:bg-[#1a2e26] border-slate-100 dark:border-slate-800'
+                                    ? 'bg-emerald-100 dark:bg-emerald-900/40 border-primary/20'
+                                    : 'bg-slate-50 dark:bg-emerald-950/20 border-slate-200 dark:border-emerald-900/30'
                             }`}
+                            style={{ paddingVertical: 6 }}
                         >
                             <Text
-                                className={`text-xs font-semibold ${
-                                    isActive ? 'text-white' : 'text-slate-600 dark:text-slate-400'
+                                className={`text-sm ${
+                                    isActive
+                                        ? 'font-semibold text-primary'
+                                        : 'font-medium text-slate-500 dark:text-emerald-700'
                                 }`}
                             >
                                 {item.label}

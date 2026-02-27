@@ -174,26 +174,46 @@ export default function CreateMatchScreen() {
             <StatusBar style="auto" />
             <SafeAreaView edges={['top']} className="flex-1">
                 {/* Header */}
-                <View className="flex-row items-center px-4 py-3 gap-3">
-                    <TouchableOpacity onPress={() => router.back()}>
-                        <MaterialIcons name="arrow-back" size={24} color="#089166" />
+                <View className="flex-row items-center px-4 h-14 gap-3 border-b border-slate-200 dark:border-emerald-900/30 bg-white/80 dark:bg-background-dark/80">
+                    <TouchableOpacity
+                        onPress={() => router.back()}
+                        className="p-2 rounded-full"
+                    >
+                        <MaterialIcons name="arrow-back" size={24} color="#334155" />
                     </TouchableOpacity>
-                    <Text className="text-lg font-bold text-slate-900 dark:text-white">
+                    <Text className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                         {editId ? 'Chỉnh sửa kèo' : 'Tạo kèo mới'}
                     </Text>
                 </View>
 
-                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                <ScrollView className="flex-1 px-4 pt-4 pb-32" showsVerticalScrollIndicator={false}>
+                    {/* Banner */}
+                    <View className="relative h-32 w-full rounded-xl overflow-hidden bg-primary/10 dark:bg-primary/5 flex-row items-center px-6 mb-6">
+                        <View className="z-10">
+                            <Text className="text-primary font-bold text-lg">
+                                {editId ? 'Chỉnh sửa kèo' : 'Sẵn sàng ra sân?'}
+                            </Text>
+                            <Text className="text-slate-600 dark:text-slate-400 text-sm mt-1">
+                                {editId ? 'Cập nhật thông tin kèo đấu của bạn.' : 'Điền thông tin để tìm đối thủ ngay.'}
+                            </Text>
+                        </View>
+                        <View className="absolute right-2 bottom-2 opacity-20 dark:opacity-40">
+                            <MaterialIcons name="sports-soccer" size={72} color="#089166" />
+                        </View>
+                    </View>
+
                     {/* Date picker */}
-                    <View className="mx-5 mb-4">
-                        <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                            Ngày thi đấu *
-                        </Text>
+                    <View className="mb-5">
+                        <View className="flex-row items-center gap-2 mb-2">
+                            <MaterialIcons name="event" size={18} color="#089166" />
+                            <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                Chọn ngày
+                            </Text>
+                        </View>
                         <TouchableOpacity
                             onPress={() => setShowDatePicker(true)}
-                            className="bg-white dark:bg-[#1a2e26] rounded-xl px-4 py-3.5 border border-slate-100 dark:border-slate-800 flex-row items-center gap-2"
+                            className="bg-white dark:bg-slate-900 rounded-xl px-4 py-3.5 border border-slate-200 dark:border-emerald-900/30"
                         >
-                            <MaterialIcons name="event" size={20} color="#089166" />
                             <Text className="text-sm text-slate-800 dark:text-white">
                                 {formatDateDisplay(matchDate)}
                             </Text>
@@ -210,15 +230,17 @@ export default function CreateMatchScreen() {
                     </View>
 
                     {/* Time picker */}
-                    <View className="mx-5 mb-4">
-                        <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                            Giờ bắt đầu *
-                        </Text>
+                    <View className="mb-5">
+                        <View className="flex-row items-center gap-2 mb-2">
+                            <MaterialIcons name="access-time" size={18} color="#089166" />
+                            <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                Giờ bắt đầu
+                            </Text>
+                        </View>
                         <TouchableOpacity
                             onPress={() => setShowTimePicker(true)}
-                            className="bg-white dark:bg-[#1a2e26] rounded-xl px-4 py-3.5 border border-slate-100 dark:border-slate-800 flex-row items-center gap-2"
+                            className="bg-white dark:bg-slate-900 rounded-xl px-4 py-3.5 border border-slate-200 dark:border-emerald-900/30"
                         >
-                            <MaterialIcons name="access-time" size={20} color="#089166" />
                             <Text className="text-sm text-slate-800 dark:text-white">
                                 {formatTimeDisplay(startTime)}
                             </Text>
@@ -235,10 +257,13 @@ export default function CreateMatchScreen() {
                     </View>
 
                     {/* Duration selector */}
-                    <View className="mx-5 mb-4">
-                        <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                            Thời lượng
-                        </Text>
+                    <View className="mb-5">
+                        <View className="flex-row items-center gap-2 mb-2">
+                            <MaterialIcons name="timer" size={18} color="#089166" />
+                            <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                Thời lượng
+                            </Text>
+                        </View>
                         <View className="flex-row gap-3">
                             {DURATIONS.map((d) => (
                                 <TouchableOpacity
@@ -247,7 +272,7 @@ export default function CreateMatchScreen() {
                                     className={`flex-1 rounded-xl py-3 items-center border ${
                                         duration === d
                                             ? 'bg-primary border-primary'
-                                            : 'bg-white dark:bg-[#1a2e26] border-slate-100 dark:border-slate-800'
+                                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-emerald-900/30'
                                     }`}
                                 >
                                     <Text
@@ -265,10 +290,13 @@ export default function CreateMatchScreen() {
                     </View>
 
                     {/* Level selector */}
-                    <View className="mx-5 mb-4">
-                        <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                            Trình độ *
-                        </Text>
+                    <View className="mb-5">
+                        <View className="flex-row items-center gap-2 mb-2">
+                            <MaterialIcons name="military-tech" size={18} color="#089166" />
+                            <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                Trình độ
+                            </Text>
+                        </View>
                         <View className="flex-row gap-3">
                             {LEVELS.map((item) => (
                                 <TouchableOpacity
@@ -295,18 +323,28 @@ export default function CreateMatchScreen() {
                     </View>
 
                     {/* Field selector */}
-                    <View className="mx-5 mb-4">
-                        <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                            Sân bóng (không bắt buộc)
-                        </Text>
+                    <View className="mb-5">
+                        <View className="flex-row items-center justify-between mb-2">
+                            <View className="flex-row items-center gap-2">
+                                <MaterialIcons name="location-on" size={18} color="#089166" />
+                                <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                    Chọn sân mong muốn
+                                </Text>
+                            </View>
+                            <View className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-emerald-900/30">
+                                <Text className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
+                                    Không bắt buộc
+                                </Text>
+                            </View>
+                        </View>
                         <TouchableOpacity
                             onPress={() => setShowFieldPicker(!showFieldPicker)}
-                            className="bg-white dark:bg-[#1a2e26] rounded-xl px-4 py-3.5 border border-slate-100 dark:border-slate-800 flex-row items-center justify-between"
+                            className="bg-white dark:bg-slate-900 rounded-xl px-4 py-3.5 border border-slate-200 dark:border-emerald-900/30 flex-row items-center justify-between"
                         >
                             <View className="flex-row items-center gap-2">
-                                <MaterialIcons name="location-on" size={20} color="#089166" />
-                                <Text className="text-sm text-slate-800 dark:text-white">
-                                    {selectedField?.name || 'Chọn sân (tùy chọn)'}
+                                <MaterialIcons name="search" size={20} color="#94a3b8" />
+                                <Text className={`text-sm ${selectedField ? 'text-slate-800 dark:text-white' : 'text-slate-400'}`}>
+                                    {selectedField?.name || 'Tìm kiếm tên sân bóng...'}
                                 </Text>
                             </View>
                             <MaterialIcons
@@ -317,7 +355,7 @@ export default function CreateMatchScreen() {
                         </TouchableOpacity>
 
                         {showFieldPicker && (
-                            <View className="mt-2 bg-white dark:bg-[#1a2e26] rounded-xl border border-slate-100 dark:border-slate-800 max-h-48">
+                            <View className="mt-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-emerald-900/30 max-h-48">
                                 {loadingFields ? (
                                     <View className="py-4 items-center">
                                         <ActivityIndicator size="small" color="#089166" />
@@ -329,7 +367,7 @@ export default function CreateMatchScreen() {
                                                 setSelectedField(null);
                                                 setShowFieldPicker(false);
                                             }}
-                                            className="px-4 py-3 border-b border-slate-50 dark:border-slate-800"
+                                            className="px-4 py-3 border-b border-slate-100 dark:border-emerald-900/30"
                                         >
                                             <Text className="text-sm text-slate-400">
                                                 Không chọn sân
@@ -342,7 +380,7 @@ export default function CreateMatchScreen() {
                                                     setSelectedField(field);
                                                     setShowFieldPicker(false);
                                                 }}
-                                                className={`px-4 py-3 border-b border-slate-50 dark:border-slate-800 ${
+                                                className={`px-4 py-3 border-b border-slate-100 dark:border-emerald-900/30 ${
                                                     selectedField?.field_id === field.field_id
                                                         ? 'bg-primary/5'
                                                         : ''
@@ -363,18 +401,21 @@ export default function CreateMatchScreen() {
                     </View>
 
                     {/* Description */}
-                    <View className="mx-5 mb-4">
-                        <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                            Mô tả thêm
-                        </Text>
+                    <View className="mb-5">
+                        <View className="flex-row items-center gap-2 mb-2">
+                            <MaterialIcons name="notes" size={18} color="#089166" />
+                            <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                Mô tả
+                            </Text>
+                        </View>
                         <TextInput
-                            placeholder="Ví dụ: Đội 5 người, tìm đối chơi vui..."
+                            placeholder="Nhập lời nhắn cho các đối thủ/đồng đội (vd: tìm đối đá nhẹ nhàng, sân 7 người...)"
                             placeholderTextColor="#94a3b8"
                             value={description}
                             onChangeText={setDescription}
                             multiline
-                            numberOfLines={3}
-                            className="bg-white dark:bg-[#1a2e26] rounded-xl px-4 py-3 text-sm text-slate-800 dark:text-white border border-slate-100 dark:border-slate-800 min-h-[80px]"
+                            numberOfLines={4}
+                            className="bg-white dark:bg-slate-900 rounded-xl px-4 py-3.5 text-sm text-slate-800 dark:text-white border border-slate-200 dark:border-emerald-900/30 min-h-[100px]"
                             textAlignVertical="top"
                         />
                     </View>
@@ -383,21 +424,26 @@ export default function CreateMatchScreen() {
                 </ScrollView>
 
                 {/* Submit Button */}
-                <View className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#0d1c17] border-t border-slate-100 dark:border-slate-800 px-5 pb-8 pt-4">
+                <View className="absolute bottom-0 left-0 right-0 bg-white/90 dark:bg-background-dark/90 border-t border-slate-200 dark:border-emerald-900/30 px-4 pb-8 pt-4">
                     <TouchableOpacity
                         onPress={handleSubmit}
                         disabled={submitting}
-                        className={`rounded-xl py-4 items-center flex-row justify-center gap-2 ${
+                        className={`rounded-xl py-4 items-center flex-row justify-center gap-2 shadow-lg ${
                             submitting ? 'bg-slate-300 dark:bg-slate-700' : 'bg-primary'
                         }`}
+                        style={!submitting ? { shadowColor: '#089166', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 6 } : undefined}
                     >
-                        {submitting && <ActivityIndicator size="small" color="white" />}
+                        {submitting ? (
+                            <ActivityIndicator size="small" color="white" />
+                        ) : (
+                            <MaterialIcons name="send" size={20} color="white" />
+                        )}
                         <Text className="text-white text-base font-bold">
                             {submitting
                                 ? 'Đang xử lý...'
                                 : editId
                                 ? 'Cập nhật kèo'
-                                : 'Tạo kèo'}
+                                : 'Đăng kèo ngay'}
                         </Text>
                     </TouchableOpacity>
                 </View>
