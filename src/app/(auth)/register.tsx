@@ -179,25 +179,6 @@ export default function RegisterScreen() {
                   </TouchableOpacity>
                 </View>
 
-                {/* Divider */}
-                <View className="flex-row items-center gap-4 py-4">
-                  <View className="h-[1px] flex-1 bg-[#cee8e0] dark:bg-[#2a4d43]" />
-                  <Text className="text-xs text-[#499c82] uppercase tracking-widest font-medium">Hoặc</Text>
-                  <View className="h-[1px] flex-1 bg-[#cee8e0] dark:bg-[#2a4d43]" />
-                </View>
-
-                {/* Social Register */}
-                <View className="flex-row gap-4 py-2">
-                  <TouchableOpacity className="flex-1 items-center justify-center h-14 border border-[#cee8e0] dark:border-[#2a4d43] rounded-xl bg-white dark:bg-[#1a2e28]">
-                    {/* Placeholder for Google Icon */}
-                    <MaterialIcons name="public" size={24} color="#DB4437" />
-                  </TouchableOpacity>
-                  <TouchableOpacity className="flex-1 items-center justify-center h-14 border border-[#cee8e0] dark:border-[#2a4d43] rounded-xl bg-white dark:bg-[#1a2e28]">
-                    {/* Placeholder for Facebook Icon */}
-                    <MaterialIcons name="facebook" size={24} color="#4267B2" />
-                  </TouchableOpacity>
-                </View>
-
                 {/* Footer Link */}
                 <View className="py-8 items-center">
                   <View className="flex-row">
