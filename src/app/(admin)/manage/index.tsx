@@ -22,6 +22,12 @@ const MENU_ITEMS = [
     icon: 'event-note' as const,
     route: '/(admin)/manage/bookings',
   },
+  {
+    title: 'Quản lý kèo đấu',
+    description: 'Xem, cập nhật trạng thái, xóa kèo ghép đội',
+    icon: 'groups' as const,
+    route: '/(admin)/manage/matchings',
+  },
 ]
 
 export default function ManageIndexScreen() {

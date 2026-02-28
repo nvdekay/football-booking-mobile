@@ -2,11 +2,14 @@ import { Field } from '../types/field'
 import {
   AdminBooking,
   AdminBookingDetail,
+  AdminMatchingFilters,
+  AdminMatchingPaginatedResponse,
   AdminUser,
   BookingStatus,
   CreateFieldBody,
   CreatePricingRuleBody,
   CreateServiceBody,
+  MatchingStatus,
   RevenueStats,
   Service,
   UpdateFieldBody,
@@ -235,5 +238,56 @@ export async function updateUserRole(
     method: 'PUT',
     headers: { Authorization: `Bearer ${token}` },
     body: JSON.stringify({ role }),
+  })
+}
+
+// ==================== Team Matchings (Admin Management) ====================
+
+export async function getAllMatchingsAdmin(
+  filters: AdminMatchingFilters,
+  token: string
+): Promise<ApiResponse<AdminMatchingPaginatedResponse>> {
+  const searchParams = new URLSearchParams()
+  if (filters.status) searchParams.append('status', filters.status)
+  if (filters.date) searchParams.append('date', filters.date)
+  if (filters.level) searchParams.append('level', filters.level)
+  if (filters.field_id) searchParams.append('field_id', filters.field_id.toString())
+  if (filters.page) searchParams.append('page', filters.page.toString())
+  if (filters.limit) searchParams.append('limit', filters.limit.toString())
+
+  const query = searchParams.toString()
+  return request<AdminMatchingPaginatedResponse>(
+    `/team-matchings/admin/all${query ? `?${query}` : ''}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  )
+}
+
+export async function getMatchingStatisticsAdmin(
+  token: string
+): Promise<ApiResponse<any>> {
+  return request<any>('/team-matchings/admin/statistics', {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function adminUpdateMatchingStatus(
+  matchingId: number,
+  status: MatchingStatus,
+  token: string
+): Promise<ApiResponse<null>> {
+  return request<null>(`/team-matchings/admin/${matchingId}/status`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ status }),
+  })
+}
+
+export async function adminDeleteMatching(
+  matchingId: number,
+  token: string
+): Promise<ApiResponse<null>> {
+  return request<null>(`/team-matchings/admin/${matchingId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
   })
 }

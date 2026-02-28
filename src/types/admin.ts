@@ -108,6 +108,51 @@ export type AdminBooking = {
   created_at: string
 }
 
+// === Team Matchings ===
+export type MatchingStatus = 'OPEN' | 'MATCHED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED' | 'EXPIRED'
+export type MatchLevel = 'VUI_VE' | 'BAN_CHUYEN' | 'CHUYEN_NGHIEP'
+
+export type AdminTeamMatching = {
+  matching_id: number
+  host_id: number
+  field_id: number | null
+  match_date: string
+  start_time: string
+  duration: number
+  level: MatchLevel
+  description: string | null
+  status: MatchingStatus
+  challenger_id: number | null
+  host_confirmed: boolean
+  challenger_confirmed: boolean
+  cancelled_by: number | null
+  cancellation_reason: string | null
+  host_name: string
+  host_phone: string
+  field_name: string | null
+  field_address: string | null
+  created_at: string
+}
+
+export type AdminMatchingFilters = {
+  status?: MatchingStatus
+  date?: string
+  level?: MatchLevel
+  field_id?: number
+  page?: number
+  limit?: number
+}
+
+export type AdminMatchingPaginatedResponse = {
+  items: AdminTeamMatching[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    total_pages: number
+  }
+}
+
 // === Users ===
 export type AdminUser = {
   user_id: number
