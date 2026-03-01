@@ -27,18 +27,18 @@ import { Field } from '../../../types/field'
 type FilterKey = 'ALL' | MatchingStatus
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  OPEN: { label: 'Đang mở', color: '#2563eb', bg: '#eff6ff' },
-  MATCHED: { label: 'Đã ghép', color: '#d97706', bg: '#fffbeb' },
-  CONFIRMED: { label: 'Đã xác nhận', color: '#089166', bg: '#ecfdf5' },
-  COMPLETED: { label: 'Hoàn thành', color: '#0891b2', bg: '#ecfeff' },
-  CANCELLED: { label: 'Đã hủy', color: '#ef4444', bg: '#fef2f2' },
-  EXPIRED: { label: 'Hết hạn', color: '#6b7280', bg: '#f3f4f6' },
+  OPEN: { label: 'Đang mở', color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
+  MATCHED: { label: 'Đã ghép', color: '#d97706', bg: '#fef3c7' },
+  CONFIRMED: { label: 'Đã xác nhận', color: '#059669', bg: '#d1fae5' },
+  COMPLETED: { label: 'Hoàn thành', color: '#0891b2', bg: '#cffafe' },
+  CANCELLED: { label: 'Đã hủy', color: '#e11d48', bg: '#ffe4e6' },
+  EXPIRED: { label: 'Hết hạn', color: '#64748b', bg: '#f1f5f9' },
 }
 
 const LEVEL_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  VUI_VE: { label: 'Vui vẻ', color: '#089166', bg: '#ecfdf5' },
-  BAN_CHUYEN: { label: 'Bán chuyên', color: '#d97706', bg: '#fffbeb' },
-  CHUYEN_NGHIEP: { label: 'Chuyên nghiệp', color: '#dc2626', bg: '#fef2f2' },
+  VUI_VE: { label: 'Vui vẻ', color: '#475569', bg: '#f1f5f9' },
+  BAN_CHUYEN: { label: 'Bán chuyên', color: '#475569', bg: '#f1f5f9' },
+  CHUYEN_NGHIEP: { label: 'Chuyên nghiệp', color: '#475569', bg: '#f1f5f9' },
 }
 
 const FILTERS: { key: FilterKey; label: string }[] = [
@@ -52,13 +52,15 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 ]
 
 const ALL_STATUSES: { status: MatchingStatus; label: string; color: string }[] = [
-  { status: 'OPEN', label: 'Đang mở', color: '#2563eb' },
+  { status: 'OPEN', label: 'Đang mở', color: '#10B981' },
   { status: 'MATCHED', label: 'Đã ghép', color: '#d97706' },
-  { status: 'CONFIRMED', label: 'Đã xác nhận', color: '#089166' },
+  { status: 'CONFIRMED', label: 'Đã xác nhận', color: '#059669' },
   { status: 'COMPLETED', label: 'Hoàn thành', color: '#0891b2' },
-  { status: 'CANCELLED', label: 'Đã hủy', color: '#ef4444' },
-  { status: 'EXPIRED', label: 'Hết hạn', color: '#6b7280' },
+  { status: 'CANCELLED', label: 'Đã hủy', color: '#e11d48' },
+  { status: 'EXPIRED', label: 'Hết hạn', color: '#64748b' },
 ]
+
+const DAYS_VI = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy']
 
 export default function MatchingsScreen() {
   const router = useRouter()
@@ -92,13 +94,11 @@ export default function MatchingsScreen() {
     }
   }
 
-  const fetchMatchings = async (fieldId?: number | null) => {
-    if (!token) return
+  const fetchMatchings = async (currentFieldId: number | null, authToken: string) => {
     try {
       const filters: any = { limit: 100 }
-      const fId = fieldId !== undefined ? fieldId : selectedFieldId
-      if (fId) filters.field_id = fId
-      const res = await getAllMatchingsAdmin(filters, token)
+      if (currentFieldId) filters.field_id = currentFieldId
+      const res = await getAllMatchingsAdmin(filters, authToken)
       setMatchings(res.data.items)
     } catch (err: any) {
       console.error('Fetch matchings error:', err.message)
@@ -112,19 +112,20 @@ export default function MatchingsScreen() {
   }, [])
 
   useEffect(() => {
-    fetchMatchings()
-  }, [token])
+    if (!token) return
+    setLoading(true)
+    fetchMatchings(selectedFieldId, token)
+  }, [token, selectedFieldId])
 
   const onRefresh = async () => {
+    if (!token) return
     setRefreshing(true)
-    await fetchMatchings()
+    await fetchMatchings(selectedFieldId, token)
     setRefreshing(false)
   }
 
   const handleFieldSelect = (fieldId: number | null) => {
     setSelectedFieldId(fieldId)
-    setLoading(true)
-    fetchMatchings(fieldId)
   }
 
   const filteredMatchings = useMemo(() => {
@@ -173,7 +174,7 @@ export default function MatchingsScreen() {
             try {
               await adminUpdateMatchingStatus(statusChangeTarget.matching_id, newStatus, token)
               Alert.alert('Thành công', 'Đã cập nhật trạng thái')
-              fetchMatchings()
+              fetchMatchings(selectedFieldId, token)
             } catch (err: any) {
               Alert.alert('Lỗi', err.message || 'Không thể cập nhật trạng thái')
             } finally {
@@ -200,7 +201,7 @@ export default function MatchingsScreen() {
             try {
               await adminDeleteMatching(matching.matching_id, token)
               Alert.alert('Thành công', 'Đã xóa kèo đấu')
-              fetchMatchings()
+              fetchMatchings(selectedFieldId, token)
             } catch (err: any) {
               Alert.alert('Lỗi', err.message || 'Không thể xóa kèo đấu')
             } finally {
@@ -212,25 +213,7 @@ export default function MatchingsScreen() {
     )
   }
 
-  // === Render helpers ===
-
-  const renderStatusBadge = (status: string) => {
-    const config = STATUS_CONFIG[status] || { label: status, color: '#6b7280', bg: '#f3f4f6' }
-    return (
-      <View style={{ backgroundColor: config.bg, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 }}>
-        <Text style={{ color: config.color, fontSize: 12, fontWeight: '700' }}>{config.label}</Text>
-      </View>
-    )
-  }
-
-  const renderLevelBadge = (level: string) => {
-    const config = LEVEL_CONFIG[level] || { label: level, color: '#6b7280', bg: '#f3f4f6' }
-    return (
-      <View style={{ backgroundColor: config.bg, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 }}>
-        <Text style={{ color: config.color, fontSize: 12, fontWeight: '700' }}>{config.label}</Text>
-      </View>
-    )
-  }
+  // === Display helpers ===
 
   const formatDuration = (minutes: number) => {
     if (minutes >= 60) {
@@ -241,90 +224,152 @@ export default function MatchingsScreen() {
     return `${minutes}p`
   }
 
+  const formatTime = (time: string) => time.substring(0, 5)
+
+  const computeEndTime = (startTime: string, durationMinutes: number) => {
+    const parts = startTime.split(':')
+    const h = parseInt(parts[0])
+    const m = parseInt(parts[1])
+    const totalMin = h * 60 + m + durationMinutes
+    const endH = Math.floor(totalMin / 60) % 24
+    const endM = totalMin % 60
+    return `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`
+  }
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr + 'T00:00:00')
+    const dayName = DAYS_VI[date.getDay()]
+    const dd = date.getDate().toString().padStart(2, '0')
+    const mm = (date.getMonth() + 1).toString().padStart(2, '0')
+    return `${dayName}, ${dd}/${mm}`
+  }
+
+  // === Render helpers ===
+
+  const renderStatusBadge = (status: string) => {
+    const config = STATUS_CONFIG[status] || { label: status, color: '#64748b', bg: '#f1f5f9' }
+    return (
+      <View style={{ backgroundColor: config.bg, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 4 }}>
+        <Text style={{ color: config.color, fontSize: 10, fontWeight: '700', textTransform: 'uppercase' }}>
+          {config.label}
+        </Text>
+      </View>
+    )
+  }
+
+  const renderLevelBadge = (level: string) => {
+    const config = LEVEL_CONFIG[level] || { label: level, color: '#475569', bg: '#f1f5f9' }
+    return (
+      <View style={{ backgroundColor: config.bg, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 4 }}>
+        <Text style={{ color: config.color, fontSize: 10, fontWeight: '700', textTransform: 'uppercase' }}>
+          {config.label}
+        </Text>
+      </View>
+    )
+  }
+
   const renderMatching = ({ item }: { item: AdminTeamMatching }) => {
     return (
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => openDetail(item)}
-        className="bg-white rounded-2xl p-4 mb-3"
+        className="bg-white rounded-xl p-4 mb-4"
         style={{
           borderWidth: 1,
           borderColor: '#f1f5f9',
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.04,
-          shadowRadius: 4,
+          shadowOpacity: 0.05,
+          shadowRadius: 2,
           elevation: 1,
         }}
       >
-        {/* Status + Level badges */}
-        <View className="flex-row items-center gap-2 mb-2">
-          {renderStatusBadge(item.status)}
-          {renderLevelBadge(item.level)}
+        {/* Row 1: Badges + ID */}
+        <View className="flex-row justify-between items-start mb-3">
+          <View className="flex-row flex-wrap gap-2">
+            {renderStatusBadge(item.status)}
+            {renderLevelBadge(item.level)}
+          </View>
+          <Text style={{ fontSize: 12, color: '#94a3b8' }}>ID: #{item.matching_id}</Text>
         </View>
 
-        {/* Field info */}
+        {/* Field name */}
         {item.field_name && (
-          <>
-            <View className="flex-row items-center gap-2 mb-1">
-              <MaterialIcons name="sports-soccer" size={18} color="#089166" />
-              <Text className="text-base font-semibold text-gray-900 flex-1" numberOfLines={1}>
-                {item.field_name}
-              </Text>
-            </View>
-            {item.field_address && (
-              <View className="flex-row items-center gap-2 mb-1">
-                <MaterialIcons name="location-on" size={16} color="#94a3b8" />
-                <Text className="text-xs text-gray-400 flex-1" numberOfLines={1}>
-                  {item.field_address}
-                </Text>
-              </View>
-            )}
-          </>
+          <Text className="font-bold text-base mb-1" style={{ color: '#0f172a' }} numberOfLines={1}>
+            {item.field_name}
+          </Text>
         )}
 
-        {/* Date + Time + Duration */}
-        <View className="flex-row items-center gap-2 mb-1">
-          <MaterialIcons name="event" size={16} color="#94a3b8" />
-          <Text className="text-xs text-gray-400">{item.match_date}</Text>
-          <MaterialIcons name="access-time" size={16} color="#94a3b8" style={{ marginLeft: 8 }} />
-          <Text className="text-xs text-gray-400">{item.start_time}</Text>
-          <MaterialIcons name="timer" size={16} color="#94a3b8" style={{ marginLeft: 8 }} />
-          <Text className="text-xs text-gray-400">{formatDuration(item.duration)}</Text>
+        {/* Location */}
+        {item.field_address && (
+          <View className="flex-row items-center mb-3">
+            <MaterialIcons name="location-on" size={14} color="#64748b" style={{ marginRight: 4 }} />
+            <Text style={{ fontSize: 12, color: '#64748b' }} numberOfLines={1} className="flex-1">
+              {item.field_address}
+            </Text>
+          </View>
+        )}
+
+        {/* Time / Date grid */}
+        <View
+          className="flex-row mb-4 p-3 rounded-lg"
+          style={{ backgroundColor: '#f8fafc', gap: 16 }}
+        >
+          <View className="flex-1" style={{ gap: 4 }}>
+            <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase' }}>
+              Thời gian
+            </Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#0f172a' }}>
+              {formatTime(item.start_time)} - {computeEndTime(item.start_time, item.duration)}
+            </Text>
+          </View>
+          <View className="flex-1" style={{ gap: 4 }}>
+            <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase' }}>
+              Ngày
+            </Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#0f172a' }}>
+              {formatDate(item.match_date)}
+            </Text>
+          </View>
         </View>
 
-        {/* Divider */}
-        <View className="h-px bg-gray-100 my-2" />
-
         {/* Host info */}
-        <View className="flex-row items-center gap-2 mb-1">
-          <MaterialIcons name="person" size={16} color="#94a3b8" />
-          <Text className="text-sm text-gray-700 font-medium">{item.host_name}</Text>
-          <View className="flex-1" />
-          <MaterialIcons name="phone" size={16} color="#94a3b8" />
-          <Text className="text-sm text-gray-500">{item.host_phone}</Text>
+        <View className="flex-row items-center mb-4" style={{ gap: 12 }}>
+          <View
+            className="items-center justify-center"
+            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(16,185,129,0.2)' }}
+          >
+            <MaterialIcons name="person" size={22} color="#10B981" />
+          </View>
+          <View>
+            <Text style={{ fontSize: 12, color: '#94a3b8' }}>Chủ kèo</Text>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: '#0f172a' }}>
+              {item.host_name}
+              <Text style={{ fontWeight: '400', color: '#94a3b8' }}> | {item.host_phone}</Text>
+            </Text>
+          </View>
         </View>
 
         {/* Confirmation indicators when MATCHED */}
         {item.status === 'MATCHED' && (
-          <View className="flex-row items-center gap-3 mt-1">
-            <View className="flex-row items-center gap-1">
+          <View className="flex-row items-center mb-3" style={{ gap: 12 }}>
+            <View className="flex-row items-center" style={{ gap: 4 }}>
               <MaterialIcons
                 name={item.host_confirmed ? 'check-circle' : 'radio-button-unchecked'}
                 size={14}
-                color={item.host_confirmed ? '#089166' : '#d1d5db'}
+                color={item.host_confirmed ? '#10B981' : '#d1d5db'}
               />
-              <Text className="text-xs" style={{ color: item.host_confirmed ? '#089166' : '#9ca3af' }}>
+              <Text style={{ fontSize: 12, color: item.host_confirmed ? '#10B981' : '#94a3b8' }}>
                 Host xác nhận
               </Text>
             </View>
-            <View className="flex-row items-center gap-1">
+            <View className="flex-row items-center" style={{ gap: 4 }}>
               <MaterialIcons
                 name={item.challenger_confirmed ? 'check-circle' : 'radio-button-unchecked'}
                 size={14}
-                color={item.challenger_confirmed ? '#089166' : '#d1d5db'}
+                color={item.challenger_confirmed ? '#10B981' : '#d1d5db'}
               />
-              <Text className="text-xs" style={{ color: item.challenger_confirmed ? '#089166' : '#9ca3af' }}>
+              <Text style={{ fontSize: 12, color: item.challenger_confirmed ? '#10B981' : '#94a3b8' }}>
                 Đối thủ xác nhận
               </Text>
             </View>
@@ -332,22 +377,19 @@ export default function MatchingsScreen() {
         )}
 
         {/* Action buttons */}
-        <View className="flex-row gap-2 mt-3">
+        <View className="flex-row pt-3" style={{ gap: 8, borderTopWidth: 1, borderTopColor: '#f1f5f9' }}>
           <TouchableOpacity
-            className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl py-2.5"
-            style={{ backgroundColor: '#2563eb' }}
+            className="flex-1 items-center justify-center rounded-lg py-2 px-4"
+            style={{ borderWidth: 1, borderColor: '#10B981' }}
             onPress={() => openStatusModal(item)}
           >
-            <MaterialIcons name="swap-horiz" size={16} color="white" />
-            <Text className="text-white text-sm font-bold">Đổi trạng thái</Text>
+            <Text style={{ fontSize: 14, fontWeight: '700', color: '#10B981' }}>Đổi trạng thái</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl py-2.5"
-            style={{ backgroundColor: '#ef4444' }}
+            className="items-center justify-center rounded-lg py-2 px-4"
             onPress={() => handleDelete(item)}
           >
-            <MaterialIcons name="delete" size={16} color="white" />
-            <Text className="text-white text-sm font-bold">Xóa</Text>
+            <Text style={{ fontSize: 14, fontWeight: '700', color: '#f43f5e' }}>Xóa</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -356,8 +398,8 @@ export default function MatchingsScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator size="large" color="#089166" />
+      <SafeAreaView className="flex-1 items-center justify-center" style={{ backgroundColor: '#f8fafc' }}>
+        <ActivityIndicator size="large" color="#10B981" />
       </SafeAreaView>
     )
   }
@@ -365,110 +407,129 @@ export default function MatchingsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <View
-        className="flex-row items-center px-4 py-3 bg-white"
-        style={{ borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}
-      >
-        <TouchableOpacity
-          className="w-10 h-10 items-center justify-center"
-          onPress={() => router.back()}
-        >
-          <MaterialIcons name="arrow-back" size={24} color="#0f172a" />
-        </TouchableOpacity>
-        <Text className="text-lg font-bold text-gray-900 flex-1 text-center">
-          Quản lý kèo đấu
-        </Text>
-        <View className="w-10 h-10" />
-      </View>
-
-      {/* Search Bar */}
-      <View className="px-4 py-3 bg-white">
-        <View
-          className="flex-row items-center h-12 rounded-xl overflow-hidden"
-          style={{ borderWidth: 1, borderColor: '#e2e8f0' }}
-        >
-          <View className="pl-4">
-            <MaterialIcons name="search" size={22} color="#94a3b8" />
-          </View>
-          <TextInput
-            className="flex-1 px-3 text-base text-gray-900 h-full"
-            placeholder="Tìm theo tên chủ kèo, sân, SĐT..."
-            placeholderTextColor="#94a3b8"
-            value={searchText}
-            onChangeText={setSearchText}
-            autoCapitalize="none"
-            returnKeyType="search"
-          />
-          {searchText.length > 0 && (
-            <TouchableOpacity className="pr-3" onPress={() => setSearchText('')}>
-              <MaterialIcons name="close" size={18} color="#94a3b8" />
-            </TouchableOpacity>
-          )}
+      <View className="bg-white" style={{ borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
+        {/* Title row */}
+        <View className="flex-row items-center p-4">
+          <TouchableOpacity
+            className="w-10 h-10 items-center justify-center rounded-full"
+            onPress={() => router.back()}
+          >
+            <MaterialIcons name="arrow-back" size={24} color="#475569" />
+          </TouchableOpacity>
+          <Text className="flex-1 text-center" style={{ fontSize: 20, fontWeight: '700', color: '#0f172a', letterSpacing: -0.3 }}>
+            Quản lý kèo đấu
+          </Text>
+          <View className="w-10 h-10" />
         </View>
-      </View>
 
-      {/* Field Filter Chips */}
-      <View className="bg-white pb-2">
+        {/* Search Bar */}
+        <View className="px-4 pb-4">
+          <View
+            className="flex-row items-center rounded-xl overflow-hidden"
+            style={{ backgroundColor: '#f1f5f9', height: 48 }}
+          >
+            <View className="pl-3">
+              <MaterialIcons name="search" size={22} color="#94a3b8" />
+            </View>
+            <TextInput
+              className="flex-1 px-3 h-full"
+              style={{ fontSize: 14, color: '#0f172a' }}
+              placeholder="Tìm tên chủ kèo, sân, hoặc SĐT"
+              placeholderTextColor="#64748b"
+              value={searchText}
+              onChangeText={setSearchText}
+              autoCapitalize="none"
+              returnKeyType="search"
+            />
+            {searchText.length > 0 && (
+              <TouchableOpacity className="pr-3" onPress={() => setSearchText('')}>
+                <MaterialIcons name="close" size={18} color="#94a3b8" />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+
+        {/* Field Filter Chips */}
+        <View className="pb-4">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+          >
+            <TouchableOpacity
+              className="rounded-full px-4 py-2"
+              style={{
+                backgroundColor: selectedFieldId === null ? '#10B981' : '#f1f5f9',
+                ...(selectedFieldId === null
+                  ? { shadowColor: '#10B981', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 2 }
+                  : {}),
+              }}
+              onPress={() => handleFieldSelect(null)}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: selectedFieldId === null ? '600' : '500',
+                  color: selectedFieldId === null ? '#ffffff' : '#475569',
+                }}
+              >
+                Tất cả sân
+              </Text>
+            </TouchableOpacity>
+            {fields.map((field) => {
+              const isActive = selectedFieldId === field.field_id
+              return (
+                <TouchableOpacity
+                  key={field.field_id}
+                  className="rounded-full px-4 py-2"
+                  style={{
+                    backgroundColor: isActive ? '#10B981' : '#f1f5f9',
+                    ...(isActive
+                      ? { shadowColor: '#10B981', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 2 }
+                      : {}),
+                  }}
+                  onPress={() => handleFieldSelect(field.field_id)}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: isActive ? '600' : '500',
+                      color: isActive ? '#ffffff' : '#475569',
+                    }}
+                  >
+                    {field.name}
+                  </Text>
+                </TouchableOpacity>
+              )
+            })}
+          </ScrollView>
+        </View>
+
+        {/* Status Filter Tabs */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+          style={{ borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}
         >
-          <TouchableOpacity
-            className="rounded-full px-4 py-2"
-            style={{
-              backgroundColor: selectedFieldId === null ? '#089166' : '#f1f5f9',
-            }}
-            onPress={() => handleFieldSelect(null)}
-          >
-            <Text
-              className="text-sm font-semibold"
-              style={{ color: selectedFieldId === null ? 'white' : '#6b7280' }}
-            >
-              Tất cả sân
-            </Text>
-          </TouchableOpacity>
-          {fields.map((field) => {
-            const isActive = selectedFieldId === field.field_id
-            return (
-              <TouchableOpacity
-                key={field.field_id}
-                className="rounded-full px-4 py-2"
-                style={{
-                  backgroundColor: isActive ? '#089166' : '#f1f5f9',
-                }}
-                onPress={() => handleFieldSelect(field.field_id)}
-              >
-                <Text
-                  className="text-sm font-semibold"
-                  style={{ color: isActive ? 'white' : '#6b7280' }}
-                >
-                  {field.name}
-                </Text>
-              </TouchableOpacity>
-            )
-          })}
-        </ScrollView>
-      </View>
-
-      {/* Status Filter Tabs */}
-      <View className="bg-white" style={{ borderBottomWidth: 1, borderBottomColor: '#f1f5f9' }}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 4 }}>
           {FILTERS.map((f) => {
             const isActive = activeFilter === f.key
             return (
               <TouchableOpacity
                 key={f.key}
-                className="pb-3 pt-2 px-3"
                 style={{
+                  paddingHorizontal: 20,
+                  paddingVertical: 12,
                   borderBottomWidth: 2,
-                  borderBottomColor: isActive ? '#089166' : 'transparent',
+                  borderBottomColor: isActive ? '#10B981' : 'transparent',
                 }}
                 onPress={() => setActiveFilter(f.key)}
               >
                 <Text
-                  className="text-sm font-bold"
-                  style={{ color: isActive ? '#0f172a' : '#94a3b8' }}
+                  style={{
+                    fontSize: 14,
+                    fontWeight: isActive ? '600' : '500',
+                    color: isActive ? '#10B981' : '#64748b',
+                  }}
                 >
                   {f.label}
                 </Text>
@@ -483,12 +544,13 @@ export default function MatchingsScreen() {
         data={filteredMatchings}
         keyExtractor={(item) => String(item.matching_id)}
         renderItem={renderMatching}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 100 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        style={{ backgroundColor: '#f8fafc' }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#10B981" />}
         ListEmptyComponent={
           <View className="items-center justify-center py-20">
-            <MaterialIcons name="groups" size={48} color="#d1d5db" />
-            <Text className="text-gray-400 text-base mt-3">
+            <MaterialIcons name="groups" size={48} color="#cbd5e1" />
+            <Text style={{ color: '#94a3b8', fontSize: 16, marginTop: 12 }}>
               {searchText.trim() ? 'Không tìm thấy kèo đấu' : 'Chưa có kèo đấu nào'}
             </Text>
           </View>
@@ -501,9 +563,9 @@ export default function MatchingsScreen() {
           <View className="bg-white rounded-t-3xl px-6 pt-6 pb-10" style={{ maxHeight: '80%' }}>
             {/* Modal header */}
             <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-lg font-bold text-gray-900">Chi tiết kèo đấu</Text>
+              <Text style={{ fontSize: 18, fontWeight: '700', color: '#0f172a' }}>Chi tiết kèo đấu</Text>
               <TouchableOpacity onPress={() => { setDetailVisible(false); setSelectedMatching(null) }}>
-                <MaterialIcons name="close" size={24} color="#6b7280" />
+                <MaterialIcons name="close" size={24} color="#64748b" />
               </TouchableOpacity>
             </View>
 
@@ -517,74 +579,97 @@ export default function MatchingsScreen() {
 
                 {/* Field info */}
                 {selectedMatching.field_name && (
-                  <View className="bg-gray-50 rounded-xl p-4 mb-3">
-                    <Text className="text-sm font-bold text-gray-900 mb-1">{selectedMatching.field_name}</Text>
+                  <View className="rounded-xl p-4 mb-3" style={{ backgroundColor: '#f8fafc' }}>
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#0f172a', marginBottom: 4 }}>
+                      {selectedMatching.field_name}
+                    </Text>
                     {selectedMatching.field_address && (
-                      <Text className="text-xs text-gray-500 mb-2">{selectedMatching.field_address}</Text>
+                      <View className="flex-row items-center">
+                        <MaterialIcons name="location-on" size={14} color="#64748b" style={{ marginRight: 4 }} />
+                        <Text style={{ fontSize: 12, color: '#64748b' }}>{selectedMatching.field_address}</Text>
+                      </View>
                     )}
                   </View>
                 )}
 
                 {/* Date, Time, Duration */}
-                <View className="bg-gray-50 rounded-xl p-4 mb-3">
-                  <View className="flex-row items-center gap-4">
-                    <View className="flex-row items-center gap-1">
-                      <MaterialIcons name="event" size={14} color="#94a3b8" />
-                      <Text className="text-xs text-gray-500">{selectedMatching.match_date}</Text>
-                    </View>
-                    <View className="flex-row items-center gap-1">
-                      <MaterialIcons name="access-time" size={14} color="#94a3b8" />
-                      <Text className="text-xs text-gray-500">{selectedMatching.start_time}</Text>
-                    </View>
-                    <View className="flex-row items-center gap-1">
-                      <MaterialIcons name="timer" size={14} color="#94a3b8" />
-                      <Text className="text-xs text-gray-500">{formatDuration(selectedMatching.duration)}</Text>
-                    </View>
+                <View className="rounded-xl p-4 mb-3 flex-row" style={{ backgroundColor: '#f8fafc', gap: 16 }}>
+                  <View className="flex-1" style={{ gap: 4 }}>
+                    <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase' }}>
+                      Thời gian
+                    </Text>
+                    <Text style={{ fontSize: 14, fontWeight: '500', color: '#0f172a' }}>
+                      {formatTime(selectedMatching.start_time)} - {computeEndTime(selectedMatching.start_time, selectedMatching.duration)}
+                    </Text>
+                  </View>
+                  <View className="flex-1" style={{ gap: 4 }}>
+                    <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase' }}>
+                      Ngày
+                    </Text>
+                    <Text style={{ fontSize: 14, fontWeight: '500', color: '#0f172a' }}>
+                      {formatDate(selectedMatching.match_date)}
+                    </Text>
+                  </View>
+                  <View style={{ gap: 4 }}>
+                    <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase' }}>
+                      Thời lượng
+                    </Text>
+                    <Text style={{ fontSize: 14, fontWeight: '500', color: '#0f172a' }}>
+                      {formatDuration(selectedMatching.duration)}
+                    </Text>
                   </View>
                 </View>
 
                 {/* Host info */}
-                <View className="bg-gray-50 rounded-xl p-4 mb-3">
-                  <Text className="text-xs text-gray-400 mb-1">Chủ kèo</Text>
-                  <View className="flex-row items-center gap-2 mb-1">
-                    <MaterialIcons name="person" size={16} color="#94a3b8" />
-                    <Text className="text-sm font-medium text-gray-900">{selectedMatching.host_name}</Text>
+                <View className="rounded-xl p-4 mb-3 flex-row items-center" style={{ backgroundColor: '#f8fafc', gap: 12 }}>
+                  <View
+                    className="items-center justify-center"
+                    style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(16,185,129,0.2)' }}
+                  >
+                    <MaterialIcons name="person" size={22} color="#10B981" />
                   </View>
-                  <View className="flex-row items-center gap-2">
-                    <MaterialIcons name="phone" size={16} color="#94a3b8" />
-                    <Text className="text-sm text-gray-500">{selectedMatching.host_phone}</Text>
+                  <View>
+                    <Text style={{ fontSize: 12, color: '#94a3b8' }}>Chủ kèo</Text>
+                    <Text style={{ fontSize: 14, fontWeight: '600', color: '#0f172a' }}>
+                      {selectedMatching.host_name}
+                    </Text>
+                    <Text style={{ fontSize: 13, color: '#64748b' }}>{selectedMatching.host_phone}</Text>
                   </View>
                 </View>
 
                 {/* Description */}
                 {selectedMatching.description && (
-                  <View className="bg-gray-50 rounded-xl p-4 mb-3">
-                    <Text className="text-xs text-gray-400 mb-1">Mô tả</Text>
-                    <Text className="text-sm text-gray-700">{selectedMatching.description}</Text>
+                  <View className="rounded-xl p-4 mb-3" style={{ backgroundColor: '#f8fafc' }}>
+                    <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', marginBottom: 4 }}>
+                      Mô tả
+                    </Text>
+                    <Text style={{ fontSize: 14, color: '#334155' }}>{selectedMatching.description}</Text>
                   </View>
                 )}
 
                 {/* Confirmation status */}
                 {(selectedMatching.status === 'MATCHED' || selectedMatching.status === 'CONFIRMED') && (
-                  <View className="bg-gray-50 rounded-xl p-4 mb-3">
-                    <Text className="text-xs text-gray-400 mb-2">Trạng thái xác nhận</Text>
-                    <View className="flex-row items-center gap-2 mb-1">
+                  <View className="rounded-xl p-4 mb-3" style={{ backgroundColor: '#f8fafc' }}>
+                    <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', marginBottom: 8 }}>
+                      Trạng thái xác nhận
+                    </Text>
+                    <View className="flex-row items-center mb-1" style={{ gap: 8 }}>
                       <MaterialIcons
                         name={selectedMatching.host_confirmed ? 'check-circle' : 'radio-button-unchecked'}
                         size={16}
-                        color={selectedMatching.host_confirmed ? '#089166' : '#d1d5db'}
+                        color={selectedMatching.host_confirmed ? '#10B981' : '#d1d5db'}
                       />
-                      <Text className="text-sm" style={{ color: selectedMatching.host_confirmed ? '#089166' : '#9ca3af' }}>
+                      <Text style={{ fontSize: 14, color: selectedMatching.host_confirmed ? '#10B981' : '#94a3b8' }}>
                         Host đã xác nhận
                       </Text>
                     </View>
-                    <View className="flex-row items-center gap-2">
+                    <View className="flex-row items-center" style={{ gap: 8 }}>
                       <MaterialIcons
                         name={selectedMatching.challenger_confirmed ? 'check-circle' : 'radio-button-unchecked'}
                         size={16}
-                        color={selectedMatching.challenger_confirmed ? '#089166' : '#d1d5db'}
+                        color={selectedMatching.challenger_confirmed ? '#10B981' : '#d1d5db'}
                       />
-                      <Text className="text-sm" style={{ color: selectedMatching.challenger_confirmed ? '#089166' : '#9ca3af' }}>
+                      <Text style={{ fontSize: 14, color: selectedMatching.challenger_confirmed ? '#10B981' : '#94a3b8' }}>
                         Đối thủ đã xác nhận
                       </Text>
                     </View>
@@ -593,9 +678,9 @@ export default function MatchingsScreen() {
 
                 {/* Cancellation reason */}
                 {selectedMatching.status === 'CANCELLED' && selectedMatching.cancellation_reason && (
-                  <View className="bg-red-50 rounded-xl p-4 mb-3">
-                    <Text className="text-sm font-bold text-red-700 mb-1">Lý do hủy</Text>
-                    <Text className="text-sm text-red-600">{selectedMatching.cancellation_reason}</Text>
+                  <View className="rounded-xl p-4 mb-3" style={{ backgroundColor: '#fff1f2' }}>
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: '#be123c', marginBottom: 4 }}>Lý do hủy</Text>
+                    <Text style={{ fontSize: 14, color: '#e11d48' }}>{selectedMatching.cancellation_reason}</Text>
                   </View>
                 )}
               </ScrollView>
@@ -608,8 +693,8 @@ export default function MatchingsScreen() {
       <Modal visible={statusModalVisible} transparent animationType="fade">
         <View className="flex-1 justify-center items-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <View className="bg-white rounded-2xl p-6 mx-6" style={{ width: '85%' }}>
-            <Text className="text-lg font-bold text-gray-900 mb-2">Đổi trạng thái</Text>
-            <Text className="text-sm text-gray-500 mb-4">
+            <Text style={{ fontSize: 18, fontWeight: '700', color: '#0f172a', marginBottom: 8 }}>Đổi trạng thái</Text>
+            <Text style={{ fontSize: 14, color: '#64748b', marginBottom: 16 }}>
               Chọn trạng thái mới cho kèo #{statusChangeTarget?.matching_id}
             </Text>
 
@@ -622,7 +707,7 @@ export default function MatchingsScreen() {
                 disabled={actionLoading}
               >
                 <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: s.color, marginRight: 12 }} />
-                <Text className="text-sm font-bold" style={{ color: s.color }}>{s.label}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: s.color }}>{s.label}</Text>
               </TouchableOpacity>
             ))}
 
@@ -631,7 +716,7 @@ export default function MatchingsScreen() {
               style={{ backgroundColor: '#f1f5f9' }}
               onPress={() => setStatusModalVisible(false)}
             >
-              <Text className="text-sm font-bold text-gray-600">Đóng</Text>
+              <Text style={{ fontSize: 14, fontWeight: '700', color: '#475569' }}>Đóng</Text>
             </TouchableOpacity>
           </View>
         </View>
