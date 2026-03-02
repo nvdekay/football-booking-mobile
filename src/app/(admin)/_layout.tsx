@@ -1,12 +1,27 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { Platform, View, Text } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
+import { useChatSocketInit, useChatListeners } from '../../hooks/useChatSocket';
+import { useChatStore } from '../../stores/chatStore';
+import { socketService } from '../../services/socketService';
 
 export default function AdminLayout() {
-    const { user, loading } = useAuth();
+    const { user, loading, token } = useAuth();
     const router = useRouter();
+
+    // Initialize socket connection for chat
+    useChatSocketInit(token);
+    useChatListeners(user?.id ?? null);
+
+    // Disconnect socket and reset chat state on logout
+    useEffect(() => {
+        if (!user && !loading) {
+            socketService.disconnect();
+            useChatStore.getState().reset();
+        }
+    }, [user, loading]);
 
     useEffect(() => {
         if (loading) return;
@@ -16,6 +31,11 @@ export default function AdminLayout() {
             router.replace('/(user)/home' as any);
         }
     }, [user, loading]);
+
+    // Compute total unread count for chat badge
+    const totalUnread = useChatStore((s) =>
+        s.conversations.reduce((sum, c) => sum + c.unread_count, 0)
+    );
 
     return (
         <Tabs
@@ -66,6 +86,37 @@ export default function AdminLayout() {
                     title: 'Quản Lý',
                     tabBarIcon: ({ color, size }) => (
                         <MaterialIcons name="settings" size={size} color={color} />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="chat"
+                options={{
+                    title: 'Tin nhắn',
+                    tabBarIcon: ({ color, size }) => (
+                        <View>
+                            <MaterialIcons name="chat" size={size} color={color} />
+                            {totalUnread > 0 && (
+                                <View
+                                    style={{
+                                        position: 'absolute',
+                                        top: -4,
+                                        right: -8,
+                                        backgroundColor: '#ef4444',
+                                        borderRadius: 9,
+                                        minWidth: 18,
+                                        height: 18,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        paddingHorizontal: 4,
+                                    }}
+                                >
+                                    <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700' }}>
+                                        {totalUnread > 99 ? '99+' : totalUnread}
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
                     ),
                 }}
             />

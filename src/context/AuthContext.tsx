@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import * as AuthApi from '../api/auth'
+import { socketService } from '../services/socketService'
+import { useChatStore } from '../stores/chatStore'
 import { LoginBody, RegisterBody, UpdateProfileBody, User } from '../types/auth'
 
 type AuthState = {
@@ -79,6 +81,8 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
   }
 
   const logout = async () => {
+    socketService.disconnect()
+    useChatStore.getState().reset()
     await clearAuthProperties()
   }
 
