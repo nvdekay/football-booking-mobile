@@ -210,12 +210,35 @@ export default function AdminChatDetailScreen() {
           </View>
 
           <View className="flex-1">
-            <Text
-              className="text-base font-bold text-slate-900 dark:text-white"
-              numberOfLines={1}
-            >
-              {headerTitle}
-            </Text>
+            <View className="flex-row items-center">
+              <Text
+                className="text-base font-bold text-slate-900 dark:text-white"
+                numberOfLines={1}
+                style={{ flexShrink: 1 }}
+              >
+                {headerTitle}
+              </Text>
+              {otherParticipant && (
+                <View
+                  className="ml-1.5 rounded px-1.5 py-0.5"
+                  style={{
+                    backgroundColor:
+                      otherParticipant.role === 'ADMIN' ? '#dbeafe' : '#f0fdf4',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      fontWeight: '700',
+                      color:
+                        otherParticipant.role === 'ADMIN' ? '#3b82f6' : '#16a34a',
+                    }}
+                  >
+                    {otherParticipant.role === 'ADMIN' ? 'ADMIN' : 'USER'}
+                  </Text>
+                </View>
+              )}
+            </View>
             {conversationTyping.length > 0 && (
               <Text className="text-xs text-primary">Đang nhập...</Text>
             )}

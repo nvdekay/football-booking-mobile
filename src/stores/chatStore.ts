@@ -155,7 +155,8 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
     const state = get()
     const current = state.messagesMap[conversationId] || initialMessagesState
 
-    if (current.loading) return
+    // Only block duplicate pagination requests, NOT reset requests
+    if (!reset && current.loading) return
     if (!reset && !current.hasMore) return
 
     const nextPage = reset ? 1 : current.page + 1
@@ -164,7 +165,10 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
       messagesMap: {
         ...s.messagesMap,
         [conversationId]: {
-          ...current,
+          // When resetting, clear existing data immediately
+          data: reset ? [] : (s.messagesMap[conversationId]?.data || []),
+          page: reset ? 0 : (s.messagesMap[conversationId]?.page || 0),
+          hasMore: true,
           loading: true,
         },
       },

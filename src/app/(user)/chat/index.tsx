@@ -74,10 +74,11 @@ export default function ChatListScreen() {
       <ChatListItem
         conversation={item}
         currentUserId={user?.id ?? 0}
+        currentUserRole={user?.role}
         onPress={handlePressConversation}
       />
     ),
-    [user?.id, handlePressConversation]
+    [user?.id, user?.role, handlePressConversation]
   )
 
   const keyExtractor = useCallback(

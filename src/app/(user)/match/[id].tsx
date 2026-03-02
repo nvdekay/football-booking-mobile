@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { createPrivateConversation } from '../../../api/chat';
 import {
     acceptChallenger,
     cancelMatching,
@@ -173,6 +174,21 @@ export default function MatchDetailScreen() {
         Linking.openURL(`tel:${phone}`);
     };
 
+    const [chatLoading, setChatLoading] = useState(false);
+
+    const handleChat = async (targetUserId: number) => {
+        if (!token) return;
+        setChatLoading(true);
+        try {
+            const res = await createPrivateConversation(token, targetUserId);
+            router.push(`/(user)/chat/${res.data.conversation_id}` as any);
+        } catch (err: any) {
+            Alert.alert('Lỗi', err.message || 'Không thể tạo cuộc trò chuyện');
+        } finally {
+            setChatLoading(false);
+        }
+    };
+
     if (loading) {
         return (
             <View className="flex-1 bg-background-light dark:bg-background-dark items-center justify-center">
@@ -285,6 +301,15 @@ export default function MatchDetailScreen() {
                                 {!!matching.host_confirmed && (
                                     <MaterialIcons name="check-circle" size={20} color="#089166" />
                                 )}
+                                {!isHost && (
+                                    <TouchableOpacity
+                                        onPress={() => handleChat(matching.host_id)}
+                                        disabled={chatLoading}
+                                        className="bg-primary/10 rounded-full p-2"
+                                    >
+                                        <MaterialIcons name="chat" size={18} color="#089166" />
+                                    </TouchableOpacity>
+                                )}
                                 <TouchableOpacity
                                     onPress={() => handleCall(matching.host_phone)}
                                     className="bg-primary/10 rounded-full p-2"
@@ -327,6 +352,15 @@ export default function MatchDetailScreen() {
                                 <View className="flex-row items-center gap-2">
                                     {!!matching.challenger_confirmed && (
                                         <MaterialIcons name="check-circle" size={20} color="#089166" />
+                                    )}
+                                    {isHost && (
+                                        <TouchableOpacity
+                                            onPress={() => handleChat(challengerParticipant.user_id)}
+                                            disabled={chatLoading}
+                                            className="bg-blue-500/10 rounded-full p-2"
+                                        >
+                                            <MaterialIcons name="chat" size={18} color="#3b82f6" />
+                                        </TouchableOpacity>
                                     )}
                                     <TouchableOpacity
                                         onPress={() => handleCall(challengerParticipant.phone_number)}
