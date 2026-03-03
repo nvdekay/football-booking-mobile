@@ -67,6 +67,9 @@ type ChatActions = {
   ) => void
   clearUserTyping: (conversationId: number, userId: number) => void
 
+  // Delete conversation
+  removeConversation: (conversationId: number) => void
+
   // Active conversation
   setActiveConversationId: (id: number | null) => void
 
@@ -345,6 +348,15 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
         },
       }
     })
+  },
+
+  // ─── Remove Conversation ────────────────────────────────────────
+  removeConversation: (conversationId) => {
+    set((state) => ({
+      conversations: state.conversations.filter(
+        (c) => c.conversation_id !== conversationId
+      ),
+    }))
   },
 
   // ─── Active Conversation ────────────────────────────────────────

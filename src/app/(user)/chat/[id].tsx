@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -236,28 +237,42 @@ export default function ChatDetailScreen() {
 
           {/* Avatar with online dot */}
           <View className="mx-2" style={{ position: 'relative' }}>
-            <View
-              className="size-10 rounded-full items-center justify-center"
-              style={{
-                backgroundColor:
-                  conversation?.type === 'SUPPORT' ? '#fef3c7' : '#d1fae5',
-                borderWidth: 2,
-                borderColor:
-                  conversation?.type === 'SUPPORT' ? '#f59e0b' : '#089166',
-              }}
-            >
-              <MaterialIcons
-                name={
-                  conversation?.type === 'SUPPORT'
-                    ? 'support-agent'
-                    : 'person'
-                }
-                size={22}
-                color={
-                  conversation?.type === 'SUPPORT' ? '#f59e0b' : '#089166'
-                }
+            {otherParticipant?.avatar_url ? (
+              <Image
+                source={{ uri: otherParticipant.avatar_url }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  borderWidth: 2,
+                  borderColor:
+                    conversation?.type === 'SUPPORT' ? '#f59e0b' : '#089166',
+                }}
               />
-            </View>
+            ) : (
+              <View
+                className="size-10 rounded-full items-center justify-center"
+                style={{
+                  backgroundColor:
+                    conversation?.type === 'SUPPORT' ? '#fef3c7' : '#d1fae5',
+                  borderWidth: 2,
+                  borderColor:
+                    conversation?.type === 'SUPPORT' ? '#f59e0b' : '#089166',
+                }}
+              >
+                <MaterialIcons
+                  name={
+                    conversation?.type === 'SUPPORT'
+                      ? 'support-agent'
+                      : 'person'
+                  }
+                  size={22}
+                  color={
+                    conversation?.type === 'SUPPORT' ? '#f59e0b' : '#089166'
+                  }
+                />
+              </View>
+            )}
             {/* Online indicator */}
             <View
               style={{

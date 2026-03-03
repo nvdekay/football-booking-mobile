@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -209,16 +210,29 @@ export default function AdminChatDetailScreen() {
 
           {/* Avatar with online dot */}
           <View className="mx-2" style={{ position: 'relative' }}>
-            <View
-              className="size-10 rounded-full items-center justify-center"
-              style={{
-                backgroundColor: '#d1fae5',
-                borderWidth: 2,
-                borderColor: '#089166',
-              }}
-            >
-              <MaterialIcons name="person" size={22} color="#089166" />
-            </View>
+            {otherParticipant?.avatar_url ? (
+              <Image
+                source={{ uri: otherParticipant.avatar_url }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  borderWidth: 2,
+                  borderColor: '#089166',
+                }}
+              />
+            ) : (
+              <View
+                className="size-10 rounded-full items-center justify-center"
+                style={{
+                  backgroundColor: '#d1fae5',
+                  borderWidth: 2,
+                  borderColor: '#089166',
+                }}
+              >
+                <MaterialIcons name="person" size={22} color="#089166" />
+              </View>
+            )}
             {/* Online indicator */}
             <View
               style={{

@@ -10,13 +10,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { createSupportConversation } from '../../../api/chat'
 import { useAuth } from '../../../context/AuthContext'
 import { useChatStore } from '../../../stores/chatStore'
 import { Conversation } from '../../../types/chat'
-import { ChatListItem } from './_components/ChatListItem'
 import { EmptyChat } from './_components/EmptyChat'
+import { SwipeableChatListItem } from './_components/SwipeableChatListItem'
 
 export default function ChatListScreen() {
   const { token, user } = useAuth()
@@ -71,14 +72,15 @@ export default function ChatListScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: Conversation }) => (
-      <ChatListItem
+      <SwipeableChatListItem
         conversation={item}
         currentUserId={user?.id ?? 0}
         currentUserRole={user?.role}
+        token={token || ''}
         onPress={handlePressConversation}
       />
     ),
-    [user?.id, user?.role, handlePressConversation]
+    [user?.id, user?.role, token, handlePressConversation]
   )
 
   const keyExtractor = useCallback(
@@ -87,55 +89,57 @@ export default function ChatListScreen() {
   )
 
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-slate-900" edges={['top']}>
-      {/* Header */}
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-slate-100">
-        <Text className="text-xl font-bold text-slate-900 dark:text-white">
-          Tin nhắn
-        </Text>
-        <TouchableOpacity
-          onPress={handleCreateSupport}
-          disabled={supportLoading}
-          activeOpacity={0.7}
-          className="flex-row items-center bg-primary/10 rounded-full px-3 py-1.5"
-        >
-          {supportLoading ? (
-            <ActivityIndicator size="small" color="#089166" />
-          ) : (
-            <>
-              <MaterialIcons name="support-agent" size={18} color="#089166" />
-              <Text className="text-sm font-semibold text-primary ml-1">
-                Hỗ trợ
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
-      </View>
-
-      {/* Conversation List */}
-      {conversationsLoading && conversations.length === 0 ? (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#089166" />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView className="flex-1 bg-white dark:bg-slate-900" edges={['top']}>
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-4 py-3 border-b border-slate-100">
+          <Text className="text-xl font-bold text-slate-900 dark:text-white">
+            Tin nhắn
+          </Text>
+          <TouchableOpacity
+            onPress={handleCreateSupport}
+            disabled={supportLoading}
+            activeOpacity={0.7}
+            className="flex-row items-center bg-primary/10 rounded-full px-3 py-1.5"
+          >
+            {supportLoading ? (
+              <ActivityIndicator size="small" color="#089166" />
+            ) : (
+              <>
+                <MaterialIcons name="support-agent" size={18} color="#089166" />
+                <Text className="text-sm font-semibold text-primary ml-1">
+                  Hỗ trợ
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
         </View>
-      ) : (
-        <FlatList
-          data={conversations}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          ListEmptyComponent={<EmptyChat />}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              tintColor="#089166"
-              colors={['#089166']}
-            />
-          }
-          contentContainerStyle={
-            conversations.length === 0 ? { flex: 1 } : undefined
-          }
-        />
-      )}
-    </SafeAreaView>
+
+        {/* Conversation List */}
+        {conversationsLoading && conversations.length === 0 ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color="#089166" />
+          </View>
+        ) : (
+          <FlatList
+            data={conversations}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            ListEmptyComponent={<EmptyChat />}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor="#089166"
+                colors={['#089166']}
+              />
+            }
+            contentContainerStyle={
+              conversations.length === 0 ? { flex: 1 } : undefined
+            }
+          />
+        )}
+      </SafeAreaView>
+    </GestureHandlerRootView>
   )
 }

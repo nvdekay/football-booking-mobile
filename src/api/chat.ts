@@ -67,3 +67,12 @@ export async function deleteMessage(token: string, messageId: number) {
     method: 'DELETE',
   })
 }
+
+export async function deleteConversation(
+  token: string,
+  conversationId: number
+) {
+  return request<null>(`/chat/conversations/${conversationId}`, token, {
+    method: 'DELETE',
+  })
+}

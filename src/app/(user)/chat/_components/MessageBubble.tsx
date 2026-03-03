@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons'
 import React from 'react'
-import { Text, View } from 'react-native'
+import { Image, Text, View } from 'react-native'
 import { Message } from '../../../../types/chat'
 
 type Props = {
@@ -81,18 +81,30 @@ export const MessageBubble = React.memo(function MessageBubble({
       {/* Other user's avatar */}
       {!isOwn && (
         <View style={{ width: 36, marginRight: 8 }}>
-          {showAvatar && (
-            <View
-              className="size-8 rounded-full items-center justify-center"
-              style={{
-                backgroundColor: '#d1fae5',
-                borderWidth: 2,
-                borderColor: '#089166',
-              }}
-            >
-              <MaterialIcons name="person" size={18} color="#089166" />
-            </View>
-          )}
+          {showAvatar &&
+            (message.sender_avatar ? (
+              <Image
+                source={{ uri: message.sender_avatar }}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  borderWidth: 2,
+                  borderColor: '#089166',
+                }}
+              />
+            ) : (
+              <View
+                className="size-8 rounded-full items-center justify-center"
+                style={{
+                  backgroundColor: '#d1fae5',
+                  borderWidth: 2,
+                  borderColor: '#089166',
+                }}
+              >
+                <MaterialIcons name="person" size={18} color="#089166" />
+              </View>
+            ))}
         </View>
       )}
 
@@ -165,18 +177,30 @@ export const MessageBubble = React.memo(function MessageBubble({
       {/* Own avatar (right side) */}
       {isOwn && (
         <View style={{ width: 36, marginLeft: 8 }}>
-          {showAvatar && (
-            <View
-              className="size-8 rounded-full items-center justify-center"
-              style={{
-                backgroundColor: '#064e3b',
-                borderWidth: 2,
-                borderColor: '#089166',
-              }}
-            >
-              <MaterialIcons name="person" size={18} color="#10b981" />
-            </View>
-          )}
+          {showAvatar &&
+            (message.sender_avatar ? (
+              <Image
+                source={{ uri: message.sender_avatar }}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  borderWidth: 2,
+                  borderColor: '#089166',
+                }}
+              />
+            ) : (
+              <View
+                className="size-8 rounded-full items-center justify-center"
+                style={{
+                  backgroundColor: '#064e3b',
+                  borderWidth: 2,
+                  borderColor: '#089166',
+                }}
+              >
+                <MaterialIcons name="person" size={18} color="#10b981" />
+              </View>
+            ))}
         </View>
       )}
     </View>
