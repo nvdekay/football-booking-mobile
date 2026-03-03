@@ -301,7 +301,7 @@ export default function ChatDetailScreen() {
           keyExtractor={keyExtractor}
           inverted
           contentContainerStyle={{ paddingVertical: 8 }}
-          style={{ backgroundColor: '#f10f03ff' }}
+          style={{ backgroundColor: '#ffffff' }}
           ListHeaderComponent={ListHeaderComponent}
           ListFooterComponent={ListFooterComponent}
           onEndReached={handleLoadMore}
@@ -310,7 +310,7 @@ export default function ChatDetailScreen() {
           keyboardShouldPersistTaps="handled"
           removeClippedSubviews={Platform.OS === 'android'}
           maxToRenderPerBatch={15}
-          windowSize={11}
+          windowSize={10}
           initialNumToRender={20}
           ListEmptyComponent={
             !isLoading ? (

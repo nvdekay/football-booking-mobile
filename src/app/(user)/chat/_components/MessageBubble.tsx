@@ -75,7 +75,8 @@ export const MessageBubble = React.memo(function MessageBubble({
 
   return (
     <View
-      className={`flex-row ${isOwn ? 'justify-end' : 'justify-start'} px-4 ${isLastInGroup ? 'mb-3' : 'mb-0.5'}`}
+      className={`flex-row ${isOwn ? 'justify-end pr-2' : 'justify-start pl-2'
+        } ${isLastInGroup ? 'mb-3' : 'mb-0.5'}`}
     >
       {/* Other user's avatar */}
       {!isOwn && (
@@ -116,25 +117,25 @@ export const MessageBubble = React.memo(function MessageBubble({
             },
             isOwn
               ? {
-                  backgroundColor: '#089166',
-                  borderBottomRightRadius: isLastInGroup ? 18 : 4,
-                  shadowColor: '#089166',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 4,
-                  elevation: 2,
-                }
+                backgroundColor: '#089166',
+                borderBottomRightRadius: isLastInGroup ? 18 : 4,
+                shadowColor: '#089166',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.15,
+                shadowRadius: 4,
+                elevation: 2,
+              }
               : {
-                  backgroundColor: '#ffffff',
-                  borderBottomLeftRadius: isLastInGroup ? 18 : 4,
-                  borderWidth: 1,
-                  borderColor: '#d1fae5',
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.05,
-                  shadowRadius: 3,
-                  elevation: 1,
-                },
+                backgroundColor: '#ffffff',
+                borderBottomLeftRadius: isLastInGroup ? 18 : 4,
+                borderWidth: 1,
+                borderColor: '#d1fae5',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 3,
+                elevation: 1,
+              },
           ]}
         >
           <Text
