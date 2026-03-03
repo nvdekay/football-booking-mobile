@@ -9,18 +9,21 @@ interface ProfileInfoProps {
 }
 
 export const ProfileInfo: React.FC<ProfileInfoProps> = ({ user, onEdit }) => {
-  // Use HTML provided avatar if user doesn't have one, or just use it as fixed for now as per "UI only" request
-  const avatarUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuA55j-00N7NbiG3udqHuXiluAC14tWlp8YVAPABb12UXaQvmXz17i_3op6jy8P6TiW13w1DX72jw4vmnBbApQ2PP2Hqe9ojORDrplw0-Y9CCN3t0NhUSxVHmGJxjg4OVrlaKjAaVTnPLoaJcpHWufWJu9l5PCaZV_eRWNtw5_HMJIIUdIgK4x5xjRPwxr5xuJ0LuElHVXdxRBYiNCBxobGf5cwYrGktuNGai5MMv1pL8KyG4M0H6C1Wgsj-P6XHUP5J21qhmaj58AU";
+  const avatarUrl = user?.avatar_url;
 
   return (
     <View className="flex p-6 flex-col items-center gap-4">
       <View className="relative">
-        <View className="w-28 h-28 rounded-full border-4 border-[#0df2aa]/20 overflow-hidden">
-          <Image
-            source={{ uri: avatarUrl }}
-            className="w-full h-full"
-            resizeMode="cover"
-          />
+        <View className="w-28 h-28 rounded-full border-4 border-[#0df2aa]/20 overflow-hidden bg-[#e0f5ee] items-center justify-center">
+          {avatarUrl ? (
+            <Image
+              source={{ uri: avatarUrl }}
+              className="w-full h-full"
+              resizeMode="cover"
+            />
+          ) : (
+            <Ionicons name="person" size={48} color="#089166" />
+          )}
         </View>
         <TouchableOpacity onPress={onEdit} className="absolute bottom-0 right-0 bg-[#0df2aa] p-1.5 rounded-full border-2 border-white">
           <Ionicons name="pencil" size={12} color="#10221c" />
