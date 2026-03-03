@@ -37,10 +37,15 @@ export const MessageBubble = React.memo(function MessageBubble({
   // System message
   if (message.message_type === 'SYSTEM') {
     return (
-      <View className="items-center my-2 px-4">
-        <Text className="text-xs text-slate-400 dark:text-slate-500 italic text-center">
-          {message.content}
-        </Text>
+      <View className="items-center my-3 px-4">
+        <View
+          className="rounded-full px-4 py-1.5"
+          style={{ backgroundColor: '#e2e8f0' }}
+        >
+          <Text className="text-xs text-slate-500 font-medium text-center">
+            {message.content}
+          </Text>
+        </View>
       </View>
     )
   }
@@ -52,8 +57,13 @@ export const MessageBubble = React.memo(function MessageBubble({
         className={`flex-row ${isOwn ? 'justify-end' : 'justify-start'} px-4 mb-1`}
       >
         <View
-          className="rounded-2xl px-3 py-2"
-          style={{ backgroundColor: '#f1f5f9', maxWidth: '75%' }}
+          className="rounded-2xl px-4 py-2.5"
+          style={{
+            backgroundColor: '#f1f5f9',
+            maxWidth: '75%',
+            borderWidth: 1,
+            borderColor: '#e2e8f0',
+          }}
         >
           <Text className="text-sm text-slate-400 italic">
             Tin nhắn đã bị xóa
@@ -65,51 +75,74 @@ export const MessageBubble = React.memo(function MessageBubble({
 
   return (
     <View
-      className={`flex-row ${isOwn ? 'justify-end' : 'justify-start'} px-4 ${isLastInGroup ? 'mb-2' : 'mb-0.5'}`}
+      className={`flex-row ${isOwn ? 'justify-end' : 'justify-start'} px-4 ${isLastInGroup ? 'mb-3' : 'mb-0.5'}`}
     >
-      {/* Other user's avatar placeholder */}
+      {/* Other user's avatar */}
       {!isOwn && (
-        <View style={{ width: 28, marginRight: 6 }}>
+        <View style={{ width: 36, marginRight: 8 }}>
           {showAvatar && (
             <View
-              className="size-7 rounded-full items-center justify-center"
-              style={{ backgroundColor: '#d1fae5' }}
+              className="size-8 rounded-full items-center justify-center"
+              style={{
+                backgroundColor: '#d1fae5',
+                borderWidth: 2,
+                borderColor: '#089166',
+              }}
             >
-              <MaterialIcons name="person" size={16} color="#089166" />
+              <MaterialIcons name="person" size={18} color="#089166" />
             </View>
           )}
         </View>
       )}
 
       {/* Bubble */}
-      <View style={{ maxWidth: '75%' }}>
-        {/* Sender name for group chats */}
+      <View style={{ maxWidth: '72%' }}>
+        {/* Sender name */}
         {!isOwn && showAvatar && (
-          <Text className="text-xs text-slate-400 mb-0.5 ml-1">
+          <Text
+            className="text-xs mb-1 ml-1"
+            style={{ color: '#089166', fontWeight: '600' }}
+          >
             {message.sender_name}
           </Text>
         )}
 
         <View
-          className={`rounded-2xl px-3 py-2 ${
-            isOwn
-              ? 'bg-primary'
-              : 'bg-slate-100 dark:bg-slate-800'
-          }`}
-          style={
+          style={[
+            {
+              borderRadius: 18,
+              paddingHorizontal: 14,
+              paddingVertical: 10,
+            },
             isOwn
               ? {
+                  backgroundColor: '#089166',
                   borderBottomRightRadius: isLastInGroup ? 18 : 4,
+                  shadowColor: '#089166',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 4,
+                  elevation: 2,
                 }
               : {
+                  backgroundColor: '#ffffff',
                   borderBottomLeftRadius: isLastInGroup ? 18 : 4,
-                }
-          }
+                  borderWidth: 1,
+                  borderColor: '#d1fae5',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 3,
+                  elevation: 1,
+                },
+          ]}
         >
           <Text
-            className={`text-[15px] leading-5 ${
-              isOwn ? 'text-white' : 'text-slate-800 dark:text-slate-200'
-            }`}
+            style={{
+              fontSize: 15,
+              lineHeight: 21,
+              color: isOwn ? '#ffffff' : '#1e293b',
+            }}
           >
             {message.content}
           </Text>
@@ -118,15 +151,33 @@ export const MessageBubble = React.memo(function MessageBubble({
         {/* Time + read status */}
         {isLastInGroup && (
           <View
-            className={`flex-row items-center gap-1 mt-0.5 ${isOwn ? 'justify-end mr-1' : 'justify-start ml-1'}`}
+            className={`flex-row items-center gap-1 mt-1 ${isOwn ? 'justify-end mr-1' : 'justify-start ml-1'}`}
           >
+            {isOwn && <ReadStatusIcon status={message.status} />}
             <Text className="text-[10px] text-slate-400">
               {formatTime(message.created_at)}
             </Text>
-            {isOwn && <ReadStatusIcon status={message.status} />}
           </View>
         )}
       </View>
+
+      {/* Own avatar (right side) */}
+      {isOwn && (
+        <View style={{ width: 36, marginLeft: 8 }}>
+          {showAvatar && (
+            <View
+              className="size-8 rounded-full items-center justify-center"
+              style={{
+                backgroundColor: '#064e3b',
+                borderWidth: 2,
+                borderColor: '#089166',
+              }}
+            >
+              <MaterialIcons name="person" size={18} color="#10b981" />
+            </View>
+          )}
+        </View>
+      )}
     </View>
   )
 })

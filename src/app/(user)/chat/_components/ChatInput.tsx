@@ -37,59 +37,75 @@ export const ChatInput = React.memo(function ChatInput({
     [onTyping]
   )
 
+  const canSend = text.trim().length > 0
+
   return (
     <View
-      className="flex-row items-end px-3 bg-white dark:bg-slate-900"
+      className="px-3 bg-white dark:bg-slate-900"
       style={{
-        paddingTop: 8,
-        paddingBottom: Platform.OS === 'ios' ? 24 : 8,
-        borderTopWidth: 0.5,
+        paddingTop: Platform.OS === 'ios' ? 10 : 5,
+        paddingBottom: Platform.OS === 'ios' ? 10 : 5,
+        borderTopWidth: 1,
         borderTopColor: '#e2e8f0',
       }}
     >
       <View
-        className="flex-1 flex-row items-end bg-slate-100 dark:bg-slate-800 rounded-3xl mr-2"
+        className="flex-row items-end"
         style={{
-          minHeight: 40,
-          maxHeight: 120,
-          paddingHorizontal: 16,
-          paddingVertical: Platform.OS === 'ios' ? 10 : 6,
+          backgroundColor: '#ecfdf5',
+          borderRadius: 16,
+          paddingHorizontal: 6,
+          paddingVertical: 4,
         }}
       >
-        <TextInput
-          className="flex-1 text-base text-slate-800 dark:text-white"
-          placeholder="Nhập tin nhắn..."
-          placeholderTextColor="#94a3b8"
-          value={text}
-          onChangeText={handleChangeText}
-          multiline
-          maxLength={2000}
-          editable={!disabled}
-          style={{
-            maxHeight: 100,
-            lineHeight: 20,
-          }}
-        />
-      </View>
 
-      <TouchableOpacity
-        onPress={handleSend}
-        disabled={disabled || text.trim().length === 0}
-        activeOpacity={0.7}
-        className="items-center justify-center rounded-full"
-        style={{
-          width: 40,
-          height: 40,
-          backgroundColor:
-            text.trim().length > 0 ? '#089166' : '#e2e8f0',
-        }}
-      >
-        <MaterialIcons
-          name="send"
-          size={20}
-          color={text.trim().length > 0 ? '#ffffff' : '#94a3b8'}
-        />
-      </TouchableOpacity>
+        {/* Text input */}
+        <View
+          className="flex-1"
+          style={{
+            minHeight: 36,
+            maxHeight: 100,
+            justifyContent: 'center',
+            paddingHorizontal: 8,
+          }}
+        >
+          <TextInput
+            className="text-base text-slate-800 dark:text-white"
+            placeholder="Nhập tin nhắn..."
+            placeholderTextColor="#94a3b8"
+            value={text}
+            onChangeText={handleChangeText}
+            multiline
+            maxLength={2000}
+            editable={!disabled}
+            style={{
+              maxHeight: 80,
+              lineHeight: 20,
+              paddingVertical: Platform.OS === 'ios' ? 8 : 4,
+            }}
+          />
+        </View>
+
+        {/* Send button */}
+        <TouchableOpacity
+          onPress={handleSend}
+          disabled={disabled || !canSend}
+          activeOpacity={0.7}
+          className="items-center justify-center"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            backgroundColor: canSend ? '#089166' : '#d1fae5',
+          }}
+        >
+          <MaterialIcons
+            name="send"
+            size={20}
+            color={canSend ? '#ffffff' : '#94a3b8'}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   )
 })

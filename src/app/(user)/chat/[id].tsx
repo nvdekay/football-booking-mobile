@@ -215,10 +215,15 @@ export default function ChatDetailScreen() {
       >
         {/* Header */}
         <View
-          className="flex-row items-center px-2 py-3 bg-white dark:bg-slate-900"
+          className="flex-row items-center px-2 py-2.5 bg-white dark:bg-slate-900"
           style={{
-            borderBottomWidth: 0.5,
-            borderBottomColor: '#e2e8f0',
+            borderBottomWidth: 1,
+            borderBottomColor: '#d1fae5',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.05,
+            shadowRadius: 3,
+            elevation: 2,
           }}
         >
           <TouchableOpacity
@@ -229,21 +234,43 @@ export default function ChatDetailScreen() {
             <MaterialIcons name="arrow-back" size={24} color="#334155" />
           </TouchableOpacity>
 
-          <View
-            className="size-9 rounded-full items-center justify-center mx-2"
-            style={{
-              backgroundColor:
-                conversation?.type === 'SUPPORT' ? '#fef3c7' : '#d1fae5',
-            }}
-          >
-            <MaterialIcons
-              name={
-                conversation?.type === 'SUPPORT' ? 'support-agent' : 'person'
-              }
-              size={20}
-              color={
-                conversation?.type === 'SUPPORT' ? '#f59e0b' : '#089166'
-              }
+          {/* Avatar with online dot */}
+          <View className="mx-2" style={{ position: 'relative' }}>
+            <View
+              className="size-10 rounded-full items-center justify-center"
+              style={{
+                backgroundColor:
+                  conversation?.type === 'SUPPORT' ? '#fef3c7' : '#d1fae5',
+                borderWidth: 2,
+                borderColor:
+                  conversation?.type === 'SUPPORT' ? '#f59e0b' : '#089166',
+              }}
+            >
+              <MaterialIcons
+                name={
+                  conversation?.type === 'SUPPORT'
+                    ? 'support-agent'
+                    : 'person'
+                }
+                size={22}
+                color={
+                  conversation?.type === 'SUPPORT' ? '#f59e0b' : '#089166'
+                }
+              />
+            </View>
+            {/* Online indicator */}
+            <View
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                right: 0,
+                width: 12,
+                height: 12,
+                borderRadius: 6,
+                backgroundColor: '#22c55e',
+                borderWidth: 2,
+                borderColor: '#ffffff',
+              }}
             />
           </View>
 
@@ -254,8 +281,14 @@ export default function ChatDetailScreen() {
             >
               {headerTitle}
             </Text>
-            {conversationTyping.length > 0 && (
-              <Text className="text-xs text-primary">Đang nhập...</Text>
+            {conversationTyping.length > 0 ? (
+              <Text className="text-xs" style={{ color: '#089166' }}>
+                Đang nhập...
+              </Text>
+            ) : (
+              <Text className="text-xs" style={{ color: '#089166' }}>
+                Đang trực tuyến
+              </Text>
             )}
           </View>
         </View>
@@ -268,6 +301,7 @@ export default function ChatDetailScreen() {
           keyExtractor={keyExtractor}
           inverted
           contentContainerStyle={{ paddingVertical: 8 }}
+          style={{ backgroundColor: '#f10f03ff' }}
           ListHeaderComponent={ListHeaderComponent}
           ListFooterComponent={ListFooterComponent}
           onEndReached={handleLoadMore}
