@@ -1,7 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import * as WebBrowser from 'expo-web-browser';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
@@ -126,7 +125,7 @@ const TYPE_CONFIG: Record<string, {
 };
 
 export default function WalletScreen() {
-    const { token, user, refreshUser } = useAuth();
+    const { token, user, refreshUser, updateWalletBalance } = useAuth();
     const mountedRef = useRef(true);
 
     // History state
@@ -195,13 +194,27 @@ export default function WalletScreen() {
                 { amount: effectiveAmount, payment_method: paymentMethod },
                 token
             );
-            if (response?.data?.payment_url) {
-                setShowTopup(false);
-                await WebBrowser.openBrowserAsync(response.data.payment_url);
-                try { await refreshUser(); } catch {}
-                fetchHistory();
-                Alert.alert('Thông báo', 'Vui lòng kiểm tra số dư ví sau khi thanh toán');
+
+            // Instantly update balance from API response
+            if (response?.data?.new_balance != null) {
+                updateWalletBalance(response.data.new_balance);
             }
+
+            // Close modal and reset form
+            setShowTopup(false);
+            setAmount(null);
+            setCustomAmount('');
+
+            // Fetch history in background
+            fetchHistory();
+
+            // Show success alert after modal close animation
+            setTimeout(() => {
+                Alert.alert(
+                    'Nạp tiền thành công!',
+                    `Đã nạp ${formatPrice(effectiveAmount)} vào ví của bạn.`
+                );
+            }, 400);
         } catch (err: any) {
             Alert.alert('Lỗi', err?.message || 'Nạp tiền thất bại');
         } finally {

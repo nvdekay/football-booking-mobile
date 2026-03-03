@@ -22,5 +22,5 @@ export type TopupBody = {
 
 export type TopupResponse = {
     payment_id: number
-    payment_url: string
+    new_balance: number
 }

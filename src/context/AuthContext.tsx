@@ -19,6 +19,7 @@ type AuthContextValue = AuthState & {
   resendVerification: (email: string) => Promise<void>
   refreshUser: () => Promise<void>
   updateProfile: (body: UpdateProfileBody) => Promise<void>
+  updateWalletBalance: (newBalance: number) => void
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -122,6 +123,15 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
     }
   }
 
+  const updateWalletBalance = (newBalance: number) => {
+    setUser((prev) => {
+      if (!prev) return prev
+      const updated = { ...prev, wallet_balance: newBalance }
+      AsyncStorage.setItem(USER_KEY, JSON.stringify(updated)).catch(() => {})
+      return updated
+    })
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -135,6 +145,7 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
         resendVerification,
         refreshUser,
         updateProfile,
+        updateWalletBalance,
       }}
     >
       {children}
