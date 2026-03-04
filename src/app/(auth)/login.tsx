@@ -37,12 +37,6 @@ export default function LoginScreen() {
 
           {/* TopAppBar */}
           <View className="flex-row items-center bg-transparent p-4 pb-2 justify-between">
-            <TouchableOpacity
-              className="flex size-12 shrink-0 items-center justify-center"
-              onPress={() => router.back()}
-            >
-              <MaterialIcons name="arrow-back-ios" size={24} color="#111816" />
-            </TouchableOpacity>
             <Text className="text-[#111816] dark:text-white text-lg font-bold leading-tight flex-1 text-center pr-12">
               Đăng nhập
             </Text>

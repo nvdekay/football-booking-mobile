@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { API_BASE_URL } from '../../../constants/api';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import {
@@ -135,8 +136,7 @@ export default function CreateMatchScreen() {
 
             if (editId) {
                 // Use PATCH for edit
-                const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1';
-                const response = await fetch(`${BASE_URL}/team-matchings/${editId}`, {
+                const response = await fetch(`${API_BASE_URL}/team-matchings/${editId}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',

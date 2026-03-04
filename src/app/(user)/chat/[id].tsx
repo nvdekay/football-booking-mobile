@@ -61,7 +61,7 @@ export default function ChatDetailScreen() {
   )
   const headerTitle =
     conversation?.type === 'SUPPORT'
-      ? 'Hỗ trợ'
+      ? 'Admin'
       : otherParticipant?.full_name || 'Chat'
 
   // ─── Set active conversation & fetch initial messages ────────

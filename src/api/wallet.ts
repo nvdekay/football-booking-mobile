@@ -1,6 +1,7 @@
 import { TopupBody, TopupResponse, WalletTransaction } from '../types/wallet'
+import { API_BASE_URL } from '../constants/api'
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1'
+const BASE_URL = API_BASE_URL
 
 type ApiResponse<T = any> = {
   success: boolean

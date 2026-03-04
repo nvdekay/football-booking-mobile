@@ -74,7 +74,7 @@ export const SwipeableChatListItem = React.memo(
     } else {
       displayName =
         conversation.type === 'SUPPORT'
-          ? 'Hỗ trợ'
+          ? 'Admin'
           : other?.full_name || 'Người dùng'
     }
 

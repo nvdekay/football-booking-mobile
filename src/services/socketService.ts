@@ -11,10 +11,7 @@ import {
   UserTypingData,
 } from '../types/chat'
 
-// Extract base URL without /api/v1 path for socket connection
-const API_BASE =
-  process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1'
-const SOCKET_URL = API_BASE.replace(/\/api\/v1\/?$/, '')
+import { SOCKET_URL } from '../constants/api'
 
 type SocketEventMap = {
   receive_message: (data: ReceiveMessageData) => void

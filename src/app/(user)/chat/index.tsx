@@ -108,7 +108,7 @@ export default function ChatListScreen() {
               <>
                 <MaterialIcons name="support-agent" size={18} color="#089166" />
                 <Text className="text-sm font-semibold text-primary ml-1">
-                  Hỗ trợ
+                  Admin
                 </Text>
               </>
             )}

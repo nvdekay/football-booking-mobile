@@ -1,6 +1,7 @@
 import { AuthResponse, LoginBody, LoginResponseData, RegisterBody, UpdateProfileBody, User } from '../types/auth'
+import { API_BASE_URL } from '../constants/api'
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1'
+const BASE_URL = API_BASE_URL
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<AuthResponse<T>> {
   const url = `${BASE_URL}${endpoint}`
