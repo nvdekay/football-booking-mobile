@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -21,11 +22,13 @@ export default function EditProfileScreen() {
 
   const [fullName, setFullName] = useState(user?.full_name ?? '');
   const [phoneNumber, setPhoneNumber] = useState(user?.phone_number ?? '');
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url ?? '');
   const [saving, setSaving] = useState(false);
 
   const hasChanges =
     fullName.trim() !== (user?.full_name ?? '') ||
-    phoneNumber.trim() !== (user?.phone_number ?? '');
+    phoneNumber.trim() !== (user?.phone_number ?? '') ||
+    avatarUrl.trim() !== (user?.avatar_url ?? '');
 
   const isValid = fullName.trim().length > 0 && /^\d+$/.test(phoneNumber.trim());
 
@@ -40,6 +43,7 @@ export default function EditProfileScreen() {
       await updateProfile({
         full_name: fullName.trim(),
         phone_number: phoneNumber.trim(),
+        avatar_url: avatarUrl.trim() || undefined,
       });
       Alert.alert('Thành công', 'Cập nhật thông tin thành công', [
         { text: 'OK', onPress: () => router.back() },
@@ -66,6 +70,35 @@ export default function EditProfileScreen() {
         </View>
 
         <ScrollView className="flex-1" contentContainerStyle={{ padding: 16, gap: 20 }} keyboardShouldPersistTaps="handled">
+          {/* Avatar Preview */}
+          <View className="items-center">
+            <View className="w-24 h-24 rounded-full border-4 border-[#0df2aa]/20 overflow-hidden bg-[#e0f5ee] items-center justify-center">
+              {avatarUrl.trim() ? (
+                <Image
+                  source={{ uri: avatarUrl.trim() }}
+                  className="w-full h-full"
+                  resizeMode="cover"
+                />
+              ) : (
+                <Ionicons name="person" size={40} color="#089166" />
+              )}
+            </View>
+          </View>
+
+          {/* Avatar URL */}
+          <View className="gap-2">
+            <Text className="text-sm font-semibold text-slate-600">Ảnh đại diện (URL)</Text>
+            <TextInput
+              value={avatarUrl}
+              onChangeText={setAvatarUrl}
+              placeholder="Dán link ảnh đại diện"
+              autoCapitalize="none"
+              autoCorrect={false}
+              className="bg-white px-4 py-3 rounded-xl text-base text-[#111816] border border-slate-200"
+              placeholderTextColor="#94a3b8"
+            />
+          </View>
+
           {/* Full Name */}
           <View className="gap-2">
             <Text className="text-sm font-semibold text-slate-600">Họ và tên</Text>
