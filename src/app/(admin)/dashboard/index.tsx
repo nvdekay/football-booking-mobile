@@ -218,7 +218,6 @@ export default function DashboardScreen() {
                 display={Platform.OS === 'ios' ? 'inline' : 'default'}
                 onChange={onEndDateChange}
                 minimumDate={startDate}
-                maximumDate={new Date()}
               />
             )}
             {Platform.OS === 'ios' && showEndPicker && (
