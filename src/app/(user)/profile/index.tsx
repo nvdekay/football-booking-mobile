@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { useAuth } from '../../../context/AuthContext';
 import { User } from '../../../types/auth';
-import { LogoutButton, MenuList, ProfileHeader, ProfileInfo, WalletCard } from './_components';
+import { LogoutButton, MenuList, ProfileHeader, ProfileInfo, WalletCard } from '../../../components/profile';
 
 export default function ProfileScreen() {
   const router = useRouter();

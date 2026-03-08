@@ -17,9 +17,9 @@ import { useTypingEmitter } from '../../../hooks/useChatSocket'
 import { socketService } from '../../../services/socketService'
 import { useChatStore } from '../../../stores/chatStore'
 import { Message, SocketCallback, ReceiveMessageData } from '../../../types/chat'
-import { ChatInput } from './_components/ChatInput'
-import { MessageBubble } from './_components/MessageBubble'
-import { TypingIndicator } from './_components/TypingIndicator'
+import { ChatInput } from '../../../components/chat/ChatInput'
+import { MessageBubble } from '../../../components/chat/MessageBubble'
+import { TypingIndicator } from '../../../components/chat/TypingIndicator'
 
 // Temp ID counter for optimistic messages
 let tempIdCounter = -1

@@ -16,8 +16,8 @@ import { createSupportConversation } from '../../../api/chat'
 import { useAuth } from '../../../context/AuthContext'
 import { useChatStore } from '../../../stores/chatStore'
 import { Conversation } from '../../../types/chat'
-import { EmptyChat } from './_components/EmptyChat'
-import { SwipeableChatListItem } from './_components/SwipeableChatListItem'
+import { EmptyChat } from '../../../components/chat/EmptyChat'
+import { SwipeableChatListItem } from '../../../components/chat/SwipeableChatListItem'
 
 export default function ChatListScreen() {
   const { token, user } = useAuth()

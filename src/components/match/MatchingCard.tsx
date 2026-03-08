@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { MatchLevel, TeamMatching } from '../../../../types/matching';
+import { MatchLevel, TeamMatching } from '../../types/matching';
 import { LevelBadge } from './LevelBadge';
 
 type Props = {

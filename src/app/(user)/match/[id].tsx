@@ -26,8 +26,8 @@ import {
 } from '../../../api/matching';
 import { useAuth } from '../../../context/AuthContext';
 import { MatchParticipant, TeamMatchingDetail } from '../../../types/matching';
-import { LevelBadge } from './_components/LevelBadge';
-import { StatusBadge } from './_components/StatusBadge';
+import { LevelBadge } from '../../../components/match/LevelBadge';
+import { StatusBadge } from '../../../components/match/StatusBadge';
 
 function formatTime(time: string): string {
     return time.substring(0, 5);

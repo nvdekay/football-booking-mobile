@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons'
 import React from 'react'
 import { Image, Text, View } from 'react-native'
-import { Message } from '../../../../types/chat'
+import { Message } from '../../types/chat'
 
 type Props = {
   message: Message

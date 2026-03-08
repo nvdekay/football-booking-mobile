@@ -15,8 +15,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '../../../context/AuthContext'
 import { useChatStore } from '../../../stores/chatStore'
 import { Conversation } from '../../../types/chat'
-import { SwipeableChatListItem } from '../../(user)/chat/_components/SwipeableChatListItem'
-import { EmptyChat } from '../../(user)/chat/_components/EmptyChat'
+import { SwipeableChatListItem } from '../../../components/chat/SwipeableChatListItem'
+import { EmptyChat } from '../../../components/chat/EmptyChat'
 
 type FilterTab = 'all' | 'unread'
 

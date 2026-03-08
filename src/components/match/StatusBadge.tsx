@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { MatchStatus } from '../../../../types/matching';
+import { MatchStatus } from '../../types/matching';
 
 const STATUS_CONFIG: Record<MatchStatus, { label: string; bg: string; text: string }> = {
     OPEN: { label: 'Đang mở', bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-700 dark:text-emerald-400' },

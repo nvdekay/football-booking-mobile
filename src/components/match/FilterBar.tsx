@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { MatchLevel } from '../../../../types/matching';
+import { MatchLevel } from '../../types/matching';
 
 const LEVELS: { value: MatchLevel; label: string }[] = [
     { value: 'VUI_VE', label: 'Vui vẻ' },

@@ -9,9 +9,9 @@ import {
   View,
 } from 'react-native'
 import { Swipeable } from 'react-native-gesture-handler'
-import { deleteConversation } from '../../../../api/chat'
-import { useChatStore } from '../../../../stores/chatStore'
-import { ChatParticipant, Conversation } from '../../../../types/chat'
+import { deleteConversation } from '../../api/chat'
+import { useChatStore } from '../../stores/chatStore'
+import { ChatParticipant, Conversation } from '../../types/chat'
 
 type Props = {
   conversation: Conversation

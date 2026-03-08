@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { MatchLevel } from '../../../../types/matching';
+import { MatchLevel } from '../../types/matching';
 
 const LEVEL_CONFIG: Record<MatchLevel, { label: string; bg: string; text: string }> = {
     VUI_VE: {

@@ -17,9 +17,9 @@ import { useTypingEmitter } from '../../../hooks/useChatSocket'
 import { socketService } from '../../../services/socketService'
 import { useChatStore } from '../../../stores/chatStore'
 import { Message, SocketCallback, ReceiveMessageData } from '../../../types/chat'
-import { ChatInput } from '../../(user)/chat/_components/ChatInput'
-import { MessageBubble } from '../../(user)/chat/_components/MessageBubble'
-import { TypingIndicator } from '../../(user)/chat/_components/TypingIndicator'
+import { ChatInput } from '../../../components/chat/ChatInput'
+import { MessageBubble } from '../../../components/chat/MessageBubble'
+import { TypingIndicator } from '../../../components/chat/TypingIndicator'
 
 let tempIdCounter = -100000
 

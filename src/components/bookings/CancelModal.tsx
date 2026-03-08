@@ -13,9 +13,9 @@ import {
     View,
 } from 'react-native';
 
-import { cancelBooking } from '../../../../api/booking';
-import { useAuth } from '../../../../context/AuthContext';
-import { Booking } from '../../../../types/booking';
+import { cancelBooking } from '../../api/booking';
+import { useAuth } from '../../context/AuthContext';
+import { Booking } from '../../types/booking';
 
 type CancelModalProps = {
     visible: boolean;

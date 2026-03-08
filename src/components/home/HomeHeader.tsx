@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
-import { useAuth } from '../../../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 function formatPrice(price: number): string {
     return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '₫';

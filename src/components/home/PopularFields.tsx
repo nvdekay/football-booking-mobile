@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { ActivityIndicator, ImageBackground, Text, TouchableOpacity, View } from 'react-native';
-import { Field } from '../../../../types/field';
+import { Field } from '../../types/field';
 
 type PopularFieldsProps = {
     fields: Field[];

@@ -16,8 +16,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getMatchings } from '../../../api/matching';
 import { useAuth } from '../../../context/AuthContext';
 import { MatchLevel, MatchingSearchParams, TeamMatching } from '../../../types/matching';
-import { FilterBar } from './_components/FilterBar';
-import { MatchingCard } from './_components/MatchingCard';
+import { FilterBar } from '../../../components/match/FilterBar';
+import { MatchingCard } from '../../../components/match/MatchingCard';
 
 export default function MatchFeedScreen() {
     const router = useRouter();

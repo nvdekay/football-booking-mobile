@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { ImageBackground, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { Field } from '../../../../types/field';
+import { Field } from '../../types/field';
 
 type FeaturedCarouselProps = {
     fields: Field[];

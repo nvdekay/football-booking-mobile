@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { FieldType } from '../../../../types/field';
+import { FieldType } from '../../types/field';
 
 type FilterChipsProps = {
     selectedType: FieldType | null;

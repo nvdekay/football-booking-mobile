@@ -15,9 +15,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getMyBookings, initiatePayment } from '../../../api/booking';
 import { useAuth } from '../../../context/AuthContext';
 import { Booking } from '../../../types/booking';
-import { BookingCard } from './_components/BookingCard';
-import { CancelModal } from './_components/CancelModal';
-import { QRCodeModal } from './_components/QRCodeModal';
+import { BookingCard } from '../../../components/bookings/BookingCard';
+import { CancelModal } from '../../../components/bookings/CancelModal';
+import { QRCodeModal } from '../../../components/bookings/QRCodeModal';
 
 function formatPrice(price: number): string {
     return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '₫';

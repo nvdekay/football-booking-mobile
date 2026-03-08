@@ -7,12 +7,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getFields } from '../../../api/field';
 import { Field, FieldSearchParams, FieldType } from '../../../types/field';
-import { FeaturedCarousel } from './_components/FeaturedCarousel';
-import { FieldFilterPanel } from './_components/FieldFilterPanel';
-import { FilterChips } from './_components/FilterChips';
-import { HomeHeader } from './_components/HomeHeader';
-import { PopularFields } from './_components/PopularFields';
-import { SearchBar } from './_components/SearchBar';
+import { FeaturedCarousel } from '../../../components/home/FeaturedCarousel';
+import { FieldFilterPanel } from '../../../components/home/FieldFilterPanel';
+import { FilterChips } from '../../../components/home/FilterChips';
+import { HomeHeader } from '../../../components/home/HomeHeader';
+import { PopularFields } from '../../../components/home/PopularFields';
+import { SearchBar } from '../../../components/home/SearchBar';
 
 export default function HomeScreen() {
     const router = useRouter();

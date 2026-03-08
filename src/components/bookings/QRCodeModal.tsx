@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
-import { getBookingQr } from '../../../../api/booking';
-import { useAuth } from '../../../../context/AuthContext';
-import { Booking } from '../../../../types/booking';
+import { getBookingQr } from '../../api/booking';
+import { useAuth } from '../../context/AuthContext';
+import { Booking } from '../../types/booking';
 
 type QRCodeModalProps = {
     visible: boolean;

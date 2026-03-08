@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons'
 import React from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
-import { ChatParticipant, Conversation } from '../../../../types/chat'
+import { ChatParticipant, Conversation } from '../../types/chat'
 
 type Props = {
   conversation: Conversation

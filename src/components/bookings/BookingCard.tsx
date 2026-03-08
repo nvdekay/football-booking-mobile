@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { Booking } from '../../../../types/booking';
+import { Booking } from '../../types/booking';
 
 type BookingCardProps = {
     booking: Booking;
