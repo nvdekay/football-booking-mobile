@@ -13,13 +13,17 @@ export default function RegisterScreen() {
   const [phone_number, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
 
   const onSubmit = async () => {
     if (!full_name || !email || !password || !phone_number) {
       Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin')
       return
     }
-    // Check Terms & Conditions logic would go here
+    if (!agreedToTerms) {
+      Alert.alert('Lỗi', 'Vui lòng đồng ý với Điều khoản & Chính sách bảo mật')
+      return
+    }
     try {
       setLoading(true)
       await auth.register({ full_name, email, password, phone_number })
@@ -38,26 +42,26 @@ export default function RegisterScreen() {
           <View className="relative flex w-full flex-col overflow-hidden pb-8">
 
             {/* TopAppBar */}
-            <View className="flex-row items-center p-4 pb-2 justify-between sticky top-0 z-10 bg-[#f5f8f7]/80 dark:bg-[#10221c]/80 backdrop-blur-md">
+            <View className="flex-row items-center p-4 pb-2 justify-between">
               <TouchableOpacity
                 className="flex size-12 shrink-0 items-center justify-center"
                 onPress={() => router.back()}
               >
-                <MaterialIcons name="arrow-back-ios" size={24} color="#0d1c17" />
+                <MaterialIcons name="arrow-back-ios" size={24} color="#111816" />
               </TouchableOpacity>
-              <Text className="text-[#0d1c17] dark:text-white text-lg font-bold leading-tight flex-1 text-center pr-12">
+              <Text className="text-[#111816] dark:text-white text-lg font-bold leading-tight flex-1 text-center pr-12">
                 Đăng ký
               </Text>
             </View>
 
             <View className="flex flex-col px-4 pt-4">
               {/* HeadlineText */}
-              <Text className="text-[#0d1c17] dark:text-white text-[28px] font-bold leading-tight text-left pb-2 pt-4">
+              <Text className="text-[#111816] dark:text-white text-[28px] font-bold leading-tight text-left pb-2 pt-4">
                 Tham gia cộng đồng bóng đá
               </Text>
 
               {/* BodyText */}
-              <Text className="text-[#499c82] dark:text-[#0bda99]/80 text-base font-normal leading-normal pb-6">
+              <Text className="text-[#608a7d] dark:text-[#0df2aa]/80 text-base font-normal leading-normal pb-6">
                 Điền thông tin bên dưới để bắt đầu trải nghiệm đặt sân nhanh chóng.
               </Text>
 
@@ -65,33 +69,33 @@ export default function RegisterScreen() {
               <View className="gap-1">
                 {/* Full Name Field */}
                 <View className="py-3">
-                  <Text className="text-[#0d1c17] dark:text-white text-sm font-medium leading-normal pb-2">
+                  <Text className="text-[#111816] dark:text-white text-sm font-medium leading-normal pb-2">
                     Họ và tên
                   </Text>
                   <View className="relative">
                     <TextInput
-                      className="w-full rounded-xl text-[#0d1c17] dark:text-white border border-[#cee8e0] dark:border-[#2a4d43] bg-white dark:bg-[#1a2e28] h-14 placeholder:text-[#499c82]/50 p-[15px] pl-12 text-base font-normal"
+                      className="w-full rounded-xl text-[#111816] dark:text-white border border-[#dbe6e2] dark:border-[#2d4d44] bg-white dark:bg-[#1a332a] h-14 placeholder:text-[#608a7d] p-[15px] pl-12 text-base font-normal"
                       placeholder="Nhập tên đầy đủ của bạn"
-                      placeholderTextColor="rgba(73, 156, 130, 0.5)"
+                      placeholderTextColor="#608a7d"
                       value={full_name}
                       onChangeText={setFullName}
                     />
                     <View className="absolute left-4 top-0 bottom-0 justify-center">
-                      <MaterialIcons name="person" size={24} color="#499c82" />
+                      <MaterialIcons name="person" size={24} color="#608a7d" />
                     </View>
                   </View>
                 </View>
 
                 {/* Email Field */}
                 <View className="py-3">
-                  <Text className="text-[#0d1c17] dark:text-white text-sm font-medium leading-normal pb-2">
+                  <Text className="text-[#111816] dark:text-white text-sm font-medium leading-normal pb-2">
                     Email
                   </Text>
                   <View className="relative">
                     <TextInput
-                      className="w-full rounded-xl text-[#0d1c17] dark:text-white border border-[#cee8e0] dark:border-[#2a4d43] bg-white dark:bg-[#1a2e28] h-14 placeholder:text-[#499c82]/50 p-[15px] pl-12 text-base font-normal"
+                      className="w-full rounded-xl text-[#111816] dark:text-white border border-[#dbe6e2] dark:border-[#2d4d44] bg-white dark:bg-[#1a332a] h-14 placeholder:text-[#608a7d] p-[15px] pl-12 text-base font-normal"
                       placeholder="example@email.com"
-                      placeholderTextColor="rgba(73, 156, 130, 0.5)"
+                      placeholderTextColor="#608a7d"
                       value={email}
                       onChangeText={setEmail}
                       autoCapitalize="none"
@@ -100,41 +104,41 @@ export default function RegisterScreen() {
                       spellCheck={false}
                     />
                     <View className="absolute left-4 top-0 bottom-0 justify-center">
-                      <MaterialIcons name="mail" size={24} color="#499c82" />
+                      <MaterialIcons name="mail" size={24} color="#608a7d" />
                     </View>
                   </View>
                 </View>
 
                 {/* Phone Number Field */}
                 <View className="py-3">
-                  <Text className="text-[#0d1c17] dark:text-white text-sm font-medium leading-normal pb-2">
+                  <Text className="text-[#111816] dark:text-white text-sm font-medium leading-normal pb-2">
                     Số điện thoại
                   </Text>
                   <View className="relative">
                     <TextInput
-                      className="w-full rounded-xl text-[#0d1c17] dark:text-white border border-[#cee8e0] dark:border-[#2a4d43] bg-white dark:bg-[#1a2e28] h-14 placeholder:text-[#499c82]/50 p-[15px] pl-12 text-base font-normal"
+                      className="w-full rounded-xl text-[#111816] dark:text-white border border-[#dbe6e2] dark:border-[#2d4d44] bg-white dark:bg-[#1a332a] h-14 placeholder:text-[#608a7d] p-[15px] pl-12 text-base font-normal"
                       placeholder="090x xxx xxx"
-                      placeholderTextColor="rgba(73, 156, 130, 0.5)"
+                      placeholderTextColor="#608a7d"
                       value={phone_number}
                       onChangeText={setPhoneNumber}
                       keyboardType="phone-pad"
                     />
                     <View className="absolute left-4 top-0 bottom-0 justify-center">
-                      <MaterialIcons name="call" size={24} color="#499c82" />
+                      <MaterialIcons name="call" size={24} color="#608a7d" />
                     </View>
                   </View>
                 </View>
 
                 {/* Password Field */}
                 <View className="py-3">
-                  <Text className="text-[#0d1c17] dark:text-white text-sm font-medium leading-normal pb-2">
+                  <Text className="text-[#111816] dark:text-white text-sm font-medium leading-normal pb-2">
                     Mật khẩu
                   </Text>
                   <View className="relative">
                     <TextInput
-                      className="w-full rounded-xl text-[#0d1c17] dark:text-white border border-[#cee8e0] dark:border-[#2a4d43] bg-white dark:bg-[#1a2e28] h-14 placeholder:text-[#499c82]/50 p-[15px] pl-12 pr-12 text-base font-normal"
+                      className="w-full rounded-xl text-[#111816] dark:text-white border border-[#dbe6e2] dark:border-[#2d4d44] bg-white dark:bg-[#1a332a] h-14 placeholder:text-[#608a7d] p-[15px] pl-12 pr-12 text-base font-normal"
                       placeholder="••••••••"
-                      placeholderTextColor="rgba(73, 156, 130, 0.5)"
+                      placeholderTextColor="#608a7d"
                       value={password}
                       onChangeText={setPassword}
                       secureTextEntry={!showPassword}
@@ -142,39 +146,44 @@ export default function RegisterScreen() {
                       spellCheck={false}
                     />
                     <View className="absolute left-4 top-0 bottom-0 justify-center">
-                      <MaterialIcons name="lock" size={24} color="#499c82" />
+                      <MaterialIcons name="lock" size={24} color="#608a7d" />
                     </View>
                     <TouchableOpacity
                       className="absolute right-4 top-0 bottom-0 justify-center"
                       onPress={() => setShowPassword(!showPassword)}
                     >
-                      <MaterialIcons name="visibility" size={24} color="#499c82" />
+                      <MaterialIcons name={showPassword ? 'visibility' : 'visibility-off'} size={24} color="#608a7d" />
                     </TouchableOpacity>
                   </View>
                 </View>
 
-                {/* Terms and Conds */}
-                <View className="flex-row items-start gap-3 py-4">
-                  {/* Checkbox placeholder using View/Icon since standard Checkbox isn't native */}
-                  <View className="mt-1 h-5 w-5 rounded border border-[#cee8e0] bg-white dark:bg-[#1a2e28] items-center justify-center">
-                    {/* Logic for checkbox state would go here */}
+                {/* Terms and Conditions */}
+                <TouchableOpacity
+                  className="flex-row items-start gap-3 py-4"
+                  activeOpacity={0.7}
+                  onPress={() => setAgreedToTerms(!agreedToTerms)}
+                >
+                  <View className={`mt-1 h-5 w-5 rounded border items-center justify-center ${agreedToTerms ? 'bg-[#0df2aa] border-[#0df2aa]' : 'border-[#dbe6e2] dark:border-[#2d4d44] bg-white dark:bg-[#1a332a]'}`}>
+                    {agreedToTerms && (
+                      <MaterialIcons name="check" size={14} color="white" />
+                    )}
                   </View>
-                  <Text className="text-sm text-[#0d1c17] dark:text-gray-300 leading-snug flex-1">
-                    Tôi đồng ý với <Text className="text-[#0bda99] font-semibold">Điều khoản & Điều kiện</Text> và <Text className="text-[#0bda99] font-semibold">Chính sách bảo mật</Text> của ứng dụng.
+                  <Text className="text-sm text-[#111816] dark:text-gray-300 leading-snug flex-1">
+                    Tôi đồng ý với <Text className="text-[#0df2aa] font-semibold">Điều khoản & Điều kiện</Text> và <Text className="text-[#0df2aa] font-semibold">Chính sách bảo mật</Text> của ứng dụng.
                   </Text>
-                </View>
+                </TouchableOpacity>
 
                 {/* Register Button */}
                 <View className="py-6">
                   <TouchableOpacity
-                    className="w-full h-14 bg-[#0bda99] rounded-xl shadow-lg items-center justify-center"
+                    className={`w-full h-14 rounded-xl shadow-lg items-center justify-center ${agreedToTerms ? 'bg-[#0df2aa]' : 'bg-[#0df2aa]/40'}`}
                     onPress={onSubmit}
-                    disabled={loading}
+                    disabled={loading || !agreedToTerms}
                   >
                     {loading ? (
-                      <ActivityIndicator color="white" />
+                      <ActivityIndicator color="#10221c" />
                     ) : (
-                      <Text className="text-white text-base font-bold">Đăng ký</Text>
+                      <Text className={`text-base font-bold ${agreedToTerms ? 'text-[#10221c]' : 'text-[#10221c]/50'}`}>Đăng ký</Text>
                     )}
                   </TouchableOpacity>
                 </View>
@@ -182,11 +191,11 @@ export default function RegisterScreen() {
                 {/* Footer Link */}
                 <View className="py-8 items-center">
                   <View className="flex-row">
-                    <Text className="text-sm text-[#499c82] dark:text-gray-400">
+                    <Text className="text-sm text-[#608a7d] dark:text-gray-400">
                       Bạn đã có tài khoản?{' '}
                     </Text>
                     <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-                      <Text className="text-[#0bda99] font-bold ml-1">Đăng nhập</Text>
+                      <Text className="text-[#0df2aa] font-bold ml-1">Đăng nhập</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
